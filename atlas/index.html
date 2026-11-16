@@ -1,0 +1,2277 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Africa CH₄ Atlas · CH₄ ALERT</title><meta name="description" content="Interactive atlas of methane observation infrastructure in Africa: operational, planned and ended sites, EM27/SUN 3-day footprints and background layers. Part of CH₄ ALERT.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* required styles */
+
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-container,
+.leaflet-pane > svg,
+.leaflet-pane > canvas,
+.leaflet-zoom-box,
+.leaflet-image-layer,
+.leaflet-layer {
+	position: absolute;
+	left: 0;
+	top: 0;
+	}
+.leaflet-container {
+	overflow: hidden;
+	}
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	-webkit-user-select: none;
+	   -moz-user-select: none;
+	        user-select: none;
+	  -webkit-user-drag: none;
+	}
+/* Prevents IE11 from highlighting tiles in blue */
+.leaflet-tile::selection {
+	background: transparent;
+}
+/* Safari renders non-retina tile on retina better with this, but Chrome is worse */
+.leaflet-safari .leaflet-tile {
+	image-rendering: -webkit-optimize-contrast;
+	}
+/* hack that prevents hw layers "stretching" when loading new tiles */
+.leaflet-safari .leaflet-tile-container {
+	width: 1600px;
+	height: 1600px;
+	-webkit-transform-origin: 0 0;
+	}
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	display: block;
+	}
+/* .leaflet-container svg: reset svg max-width decleration shipped in Joomla! (joomla.org) 3.x */
+/* .leaflet-container img: map is broken in FF if you have max-width: 100% on tiles */
+.leaflet-container .leaflet-overlay-pane svg {
+	max-width: none !important;
+	max-height: none !important;
+	}
+.leaflet-container .leaflet-marker-pane img,
+.leaflet-container .leaflet-shadow-pane img,
+.leaflet-container .leaflet-tile-pane img,
+.leaflet-container img.leaflet-image-layer,
+.leaflet-container .leaflet-tile {
+	max-width: none !important;
+	max-height: none !important;
+	width: auto;
+	padding: 0;
+	}
+
+.leaflet-container img.leaflet-tile {
+	/* See: https://bugs.chromium.org/p/chromium/issues/detail?id=600120 */
+	mix-blend-mode: plus-lighter;
+}
+
+.leaflet-container.leaflet-touch-zoom {
+	-ms-touch-action: pan-x pan-y;
+	touch-action: pan-x pan-y;
+	}
+.leaflet-container.leaflet-touch-drag {
+	-ms-touch-action: pinch-zoom;
+	/* Fallback for FF which doesn't support pinch-zoom */
+	touch-action: none;
+	touch-action: pinch-zoom;
+}
+.leaflet-container.leaflet-touch-drag.leaflet-touch-zoom {
+	-ms-touch-action: none;
+	touch-action: none;
+}
+.leaflet-container {
+	-webkit-tap-highlight-color: transparent;
+}
+.leaflet-container a {
+	-webkit-tap-highlight-color: rgba(51, 181, 229, 0.4);
+}
+.leaflet-tile {
+	filter: inherit;
+	visibility: hidden;
+	}
+.leaflet-tile-loaded {
+	visibility: inherit;
+	}
+.leaflet-zoom-box {
+	width: 0;
+	height: 0;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	z-index: 800;
+	}
+/* workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=888319 */
+.leaflet-overlay-pane svg {
+	-moz-user-select: none;
+	}
+
+.leaflet-pane         { z-index: 400; }
+
+.leaflet-tile-pane    { z-index: 200; }
+.leaflet-overlay-pane { z-index: 400; }
+.leaflet-shadow-pane  { z-index: 500; }
+.leaflet-marker-pane  { z-index: 600; }
+.leaflet-tooltip-pane   { z-index: 650; }
+.leaflet-popup-pane   { z-index: 700; }
+
+.leaflet-map-pane canvas { z-index: 100; }
+.leaflet-map-pane svg    { z-index: 200; }
+
+.leaflet-vml-shape {
+	width: 1px;
+	height: 1px;
+	}
+.lvml {
+	display: inline-block;
+	position: absolute;
+	}
+
+
+/* control positioning */
+
+.leaflet-control {
+	position: relative;
+	z-index: 800;
+	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+	pointer-events: auto;
+	}
+.leaflet-top,
+.leaflet-bottom {
+	position: absolute;
+	z-index: 1000;
+	pointer-events: none;
+	}
+.leaflet-top {
+	top: 0;
+	}
+.leaflet-right {
+	right: 0;
+	}
+.leaflet-bottom {
+	bottom: 0;
+	}
+.leaflet-left {
+	left: 0;
+	}
+.leaflet-control {
+	float: left;
+	clear: both;
+	}
+.leaflet-right .leaflet-control {
+	float: right;
+	}
+.leaflet-top .leaflet-control {
+	margin-top: 10px;
+	}
+.leaflet-bottom .leaflet-control {
+	margin-bottom: 10px;
+	}
+.leaflet-left .leaflet-control {
+	margin-left: 10px;
+	}
+.leaflet-right .leaflet-control {
+	margin-right: 10px;
+	}
+
+
+/* zoom and fade animations */
+
+.leaflet-fade-anim .leaflet-popup {
+	opacity: 0;
+	-webkit-transition: opacity 0.2s linear;
+	   -moz-transition: opacity 0.2s linear;
+	        transition: opacity 0.2s linear;
+	}
+.leaflet-fade-anim .leaflet-map-pane .leaflet-popup {
+	opacity: 1;
+	}
+.leaflet-zoom-animated {
+	-webkit-transform-origin: 0 0;
+	    -ms-transform-origin: 0 0;
+	        transform-origin: 0 0;
+	}
+svg.leaflet-zoom-animated {
+	will-change: transform;
+}
+
+.leaflet-zoom-anim .leaflet-zoom-animated {
+	-webkit-transition: -webkit-transform 0.25s cubic-bezier(0,0,0.25,1);
+	   -moz-transition:    -moz-transform 0.25s cubic-bezier(0,0,0.25,1);
+	        transition:         transform 0.25s cubic-bezier(0,0,0.25,1);
+	}
+.leaflet-zoom-anim .leaflet-tile,
+.leaflet-pan-anim .leaflet-tile {
+	-webkit-transition: none;
+	   -moz-transition: none;
+	        transition: none;
+	}
+
+.leaflet-zoom-anim .leaflet-zoom-hide {
+	visibility: hidden;
+	}
+
+
+/* cursors */
+
+.leaflet-interactive {
+	cursor: pointer;
+	}
+.leaflet-grab {
+	cursor: -webkit-grab;
+	cursor:    -moz-grab;
+	cursor:         grab;
+	}
+.leaflet-crosshair,
+.leaflet-crosshair .leaflet-interactive {
+	cursor: crosshair;
+	}
+.leaflet-popup-pane,
+.leaflet-control {
+	cursor: auto;
+	}
+.leaflet-dragging .leaflet-grab,
+.leaflet-dragging .leaflet-grab .leaflet-interactive,
+.leaflet-dragging .leaflet-marker-draggable {
+	cursor: move;
+	cursor: -webkit-grabbing;
+	cursor:    -moz-grabbing;
+	cursor:         grabbing;
+	}
+
+/* marker & overlays interactivity */
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-image-layer,
+.leaflet-pane > svg path,
+.leaflet-tile-container {
+	pointer-events: none;
+	}
+
+.leaflet-marker-icon.leaflet-interactive,
+.leaflet-image-layer.leaflet-interactive,
+.leaflet-pane > svg path.leaflet-interactive,
+svg.leaflet-image-layer.leaflet-interactive path {
+	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+	pointer-events: auto;
+	}
+
+/* visual tweaks */
+
+.leaflet-container {
+	background: #ddd;
+	outline-offset: 1px;
+	}
+.leaflet-container a {
+	color: #0078A8;
+	}
+.leaflet-zoom-box {
+	border: 2px dotted #38f;
+	background: rgba(255,255,255,0.5);
+	}
+
+
+/* general typography */
+.leaflet-container {
+	font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-size: 0.75rem;
+	line-height: 1.5;
+	}
+
+
+/* general toolbar styles */
+
+.leaflet-bar {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+	border-radius: 4px;
+	}
+.leaflet-bar a {
+	background-color: #fff;
+	border-bottom: 1px solid #ccc;
+	width: 26px;
+	height: 26px;
+	line-height: 26px;
+	display: block;
+	text-align: center;
+	text-decoration: none;
+	color: black;
+	}
+.leaflet-bar a,
+.leaflet-control-layers-toggle {
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	display: block;
+	}
+.leaflet-bar a:hover,
+.leaflet-bar a:focus {
+	background-color: #f4f4f4;
+	}
+.leaflet-bar a:first-child {
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	}
+.leaflet-bar a:last-child {
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+	border-bottom: none;
+	}
+.leaflet-bar a.leaflet-disabled {
+	cursor: default;
+	background-color: #f4f4f4;
+	color: #bbb;
+	}
+
+.leaflet-touch .leaflet-bar a {
+	width: 30px;
+	height: 30px;
+	line-height: 30px;
+	}
+.leaflet-touch .leaflet-bar a:first-child {
+	border-top-left-radius: 2px;
+	border-top-right-radius: 2px;
+	}
+.leaflet-touch .leaflet-bar a:last-child {
+	border-bottom-left-radius: 2px;
+	border-bottom-right-radius: 2px;
+	}
+
+/* zoom control */
+
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+	font: bold 18px 'Lucida Console', Monaco, monospace;
+	text-indent: 1px;
+	}
+
+.leaflet-touch .leaflet-control-zoom-in, .leaflet-touch .leaflet-control-zoom-out  {
+	font-size: 22px;
+	}
+
+
+/* layers control */
+
+.leaflet-control-layers {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+	background: #fff;
+	border-radius: 5px;
+	}
+.leaflet-control-layers-toggle {
+	width: 36px;
+	height: 36px;
+	}
+.leaflet-retina .leaflet-control-layers-toggle {
+	background-size: 26px 26px;
+	}
+.leaflet-touch .leaflet-control-layers-toggle {
+	width: 44px;
+	height: 44px;
+	}
+.leaflet-control-layers .leaflet-control-layers-list,
+.leaflet-control-layers-expanded .leaflet-control-layers-toggle {
+	display: none;
+	}
+.leaflet-control-layers-expanded .leaflet-control-layers-list {
+	display: block;
+	position: relative;
+	}
+.leaflet-control-layers-expanded {
+	padding: 6px 10px 6px 6px;
+	color: #333;
+	background: #fff;
+	}
+.leaflet-control-layers-scrollbar {
+	overflow-y: scroll;
+	overflow-x: hidden;
+	padding-right: 5px;
+	}
+.leaflet-control-layers-selector {
+	margin-top: 2px;
+	position: relative;
+	top: 1px;
+	}
+.leaflet-control-layers label {
+	display: block;
+	font-size: 13px;
+	font-size: 1.08333em;
+	}
+.leaflet-control-layers-separator {
+	height: 0;
+	border-top: 1px solid #ddd;
+	margin: 5px -10px 5px -6px;
+	}
+
+/* Default icon URLs */
+.leaflet-default-icon-path { /* used only in path-guessing heuristic, see L.Icon.Default */
+	}
+
+
+/* attribution and scale controls */
+
+.leaflet-container .leaflet-control-attribution {
+	background: #fff;
+	background: rgba(255, 255, 255, 0.8);
+	margin: 0;
+	}
+.leaflet-control-attribution,
+.leaflet-control-scale-line {
+	padding: 0 5px;
+	color: #333;
+	line-height: 1.4;
+	}
+.leaflet-control-attribution a {
+	text-decoration: none;
+	}
+.leaflet-control-attribution a:hover,
+.leaflet-control-attribution a:focus {
+	text-decoration: underline;
+	}
+.leaflet-attribution-flag {
+	display: inline !important;
+	vertical-align: baseline !important;
+	width: 1em;
+	height: 0.6669em;
+	}
+.leaflet-left .leaflet-control-scale {
+	margin-left: 5px;
+	}
+.leaflet-bottom .leaflet-control-scale {
+	margin-bottom: 5px;
+	}
+.leaflet-control-scale-line {
+	border: 2px solid #777;
+	border-top: none;
+	line-height: 1.1;
+	padding: 2px 5px 1px;
+	white-space: nowrap;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	background: rgba(255, 255, 255, 0.8);
+	text-shadow: 1px 1px #fff;
+	}
+.leaflet-control-scale-line:not(:first-child) {
+	border-top: 2px solid #777;
+	border-bottom: none;
+	margin-top: -2px;
+	}
+.leaflet-control-scale-line:not(:first-child):not(:last-child) {
+	border-bottom: 2px solid #777;
+	}
+
+.leaflet-touch .leaflet-control-attribution,
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	box-shadow: none;
+	}
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	border: 2px solid rgba(0,0,0,0.2);
+	background-clip: padding-box;
+	}
+
+
+/* popup */
+
+.leaflet-popup {
+	position: absolute;
+	text-align: center;
+	margin-bottom: 20px;
+	}
+.leaflet-popup-content-wrapper {
+	padding: 1px;
+	text-align: left;
+	border-radius: 12px;
+	}
+.leaflet-popup-content {
+	margin: 13px 24px 13px 20px;
+	line-height: 1.3;
+	font-size: 13px;
+	font-size: 1.08333em;
+	min-height: 1px;
+	}
+.leaflet-popup-content p {
+	margin: 17px 0;
+	margin: 1.3em 0;
+	}
+.leaflet-popup-tip-container {
+	width: 40px;
+	height: 20px;
+	position: absolute;
+	left: 50%;
+	margin-top: -1px;
+	margin-left: -20px;
+	overflow: hidden;
+	pointer-events: none;
+	}
+.leaflet-popup-tip {
+	width: 17px;
+	height: 17px;
+	padding: 1px;
+
+	margin: -10px auto 0;
+	pointer-events: auto;
+
+	-webkit-transform: rotate(45deg);
+	   -moz-transform: rotate(45deg);
+	    -ms-transform: rotate(45deg);
+	        transform: rotate(45deg);
+	}
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+	background: white;
+	color: #333;
+	box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+	}
+.leaflet-container a.leaflet-popup-close-button {
+	position: absolute;
+	top: 0;
+	right: 0;
+	border: none;
+	text-align: center;
+	width: 24px;
+	height: 24px;
+	font: 16px/24px Tahoma, Verdana, sans-serif;
+	color: #757575;
+	text-decoration: none;
+	background: transparent;
+	}
+.leaflet-container a.leaflet-popup-close-button:hover,
+.leaflet-container a.leaflet-popup-close-button:focus {
+	color: #585858;
+	}
+.leaflet-popup-scrolled {
+	overflow: auto;
+	}
+
+.leaflet-oldie .leaflet-popup-content-wrapper {
+	-ms-zoom: 1;
+	}
+.leaflet-oldie .leaflet-popup-tip {
+	width: 24px;
+	margin: 0 auto;
+
+	-ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678)";
+	filter: progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678);
+	}
+
+.leaflet-oldie .leaflet-control-zoom,
+.leaflet-oldie .leaflet-control-layers,
+.leaflet-oldie .leaflet-popup-content-wrapper,
+.leaflet-oldie .leaflet-popup-tip {
+	border: 1px solid #999;
+	}
+
+
+/* div icon */
+
+.leaflet-div-icon {
+	background: #fff;
+	border: 1px solid #666;
+	}
+
+
+/* Tooltip */
+/* Base styles for the element that has a tooltip */
+.leaflet-tooltip {
+	position: absolute;
+	padding: 6px;
+	background-color: #fff;
+	border: 1px solid #fff;
+	border-radius: 3px;
+	color: #222;
+	white-space: nowrap;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	pointer-events: none;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+	}
+.leaflet-tooltip.leaflet-interactive {
+	cursor: pointer;
+	pointer-events: auto;
+	}
+.leaflet-tooltip-top:before,
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	position: absolute;
+	pointer-events: none;
+	border: 6px solid transparent;
+	background: transparent;
+	content: "";
+	}
+
+/* Directions */
+
+.leaflet-tooltip-bottom {
+	margin-top: 6px;
+}
+.leaflet-tooltip-top {
+	margin-top: -6px;
+}
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-top:before {
+	left: 50%;
+	margin-left: -6px;
+	}
+.leaflet-tooltip-top:before {
+	bottom: 0;
+	margin-bottom: -12px;
+	border-top-color: #fff;
+	}
+.leaflet-tooltip-bottom:before {
+	top: 0;
+	margin-top: -12px;
+	margin-left: -6px;
+	border-bottom-color: #fff;
+	}
+.leaflet-tooltip-left {
+	margin-left: -6px;
+}
+.leaflet-tooltip-right {
+	margin-left: 6px;
+}
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	top: 50%;
+	margin-top: -6px;
+	}
+.leaflet-tooltip-left:before {
+	right: 0;
+	margin-right: -12px;
+	border-left-color: #fff;
+	}
+.leaflet-tooltip-right:before {
+	left: 0;
+	margin-left: -12px;
+	border-right-color: #fff;
+	}
+
+/* Printing */
+
+@media print {
+	/* Prevent printers from removing background-images of controls. */
+	.leaflet-control {
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
+		}
+	}
+.leaflet-cluster-anim .leaflet-marker-icon, .leaflet-cluster-anim .leaflet-marker-shadow {
+	-webkit-transition: -webkit-transform 0.3s ease-out, opacity 0.3s ease-in;
+	-moz-transition: -moz-transform 0.3s ease-out, opacity 0.3s ease-in;
+	-o-transition: -o-transform 0.3s ease-out, opacity 0.3s ease-in;
+	transition: transform 0.3s ease-out, opacity 0.3s ease-in;
+}
+
+.leaflet-cluster-spider-leg {
+	/* stroke-dashoffset (duration and function) should match with leaflet-marker-icon transform in order to track it exactly */
+	-webkit-transition: -webkit-stroke-dashoffset 0.3s ease-out, -webkit-stroke-opacity 0.3s ease-in;
+	-moz-transition: -moz-stroke-dashoffset 0.3s ease-out, -moz-stroke-opacity 0.3s ease-in;
+	-o-transition: -o-stroke-dashoffset 0.3s ease-out, -o-stroke-opacity 0.3s ease-in;
+	transition: stroke-dashoffset 0.3s ease-out, stroke-opacity 0.3s ease-in;
+}
+
+:root{
+  --bg:#eef1ec; --panel:#ffffff; --panel-2:#f6f8f5; --ink:#15211d; --muted:#5a6862; --faint:#8a9690;
+  --line:#d6ded8; --line-2:#e6ebe7;
+  --accent:#0b6b57; --accent-ink:#ffffff; --accent-soft:#dcefe8;
+  --river:#2e5fd0; --lake:#1795b0; --land:#8a5a2b; --geo:#b0418f;
+  --ok:#1f7a3f; --ok-soft:#dff1e4; --warn:#9a6200; --warn-soft:#fbefd6; --bad:#b3261e; --bad-soft:#f9e0de;
+  --ocean:#d7e2e4; --landfill:#fbfbf8; --border:#b3c0b9;
+  --shadow:0 1px 2px rgba(20,35,30,.06),0 6px 24px rgba(20,35,30,.08);
+  --display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0e1513; --panel:#151f1c; --panel-2:#1a2622; --ink:#e4ebe7; --muted:#9aa9a2; --faint:#6f7e77;
+    --line:#2b3934; --line-2:#22302b;
+    --accent:#3cc19d; --accent-ink:#06231b; --accent-soft:#173a31;
+    --river:#7ea2f4; --lake:#4cc0d6; --land:#c9976a; --geo:#dc74bd;
+    --ok:#62c98a; --ok-soft:#173424; --warn:#e8b04e; --warn-soft:#3a2d12; --bad:#f08a80; --bad-soft:#3e1d1a;
+    --ocean:#0a1113; --landfill:#1b2522; --border:#3a4a44;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 24px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+    color-scheme:dark;
+    --bg:#0e1513; --panel:#151f1c; --panel-2:#1a2622; --ink:#e4ebe7; --muted:#9aa9a2; --faint:#6f7e77;
+    --line:#2b3934; --line-2:#22302b;
+    --accent:#3cc19d; --accent-ink:#06231b; --accent-soft:#173a31;
+    --river:#7ea2f4; --lake:#4cc0d6; --land:#c9976a; --geo:#dc74bd;
+    --ok:#62c98a; --ok-soft:#173424; --warn:#e8b04e; --warn-soft:#3a2d12; --bad:#f08a80; --bad-soft:#3e1d1a;
+    --ocean:#0a1113; --landfill:#1b2522; --border:#3a4a44;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 24px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--body);font-size:14px;line-height:1.5;padding-inline:16px;padding-block:0 32px}
+a{color:var(--accent)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+h1,h2,h3{font-family:var(--display);font-stretch:85%;text-wrap:balance;margin:0;letter-spacing:-.01em}
+.eyebrow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+
+/* header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:1000;background:var(--bg);display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-block:12px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.brand{display:flex;align-items:baseline;gap:10px;margin-right:auto}
+.brand h1{font-size:22px;font-weight:800;font-stretch:78%}
+.brand h1 b{color:var(--accent);font-weight:800}
+.brand small{color:var(--muted);font-size:12px}
+.tabs{display:flex;gap:4px;flex-wrap:wrap}
+.tab{border:1px solid transparent;background:none;padding:6px 12px;border-radius:999px;cursor:pointer;font-weight:600;color:var(--muted)}
+.tab:hover{color:var(--ink);background:var(--panel)}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.tab .dot{display:inline-block;min-width:18px;padding:0 5px;border-radius:9px;background:var(--warn);color:#fff;font-size:11px;margin-left:4px;text-align:center}
+.who{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.who img{width:24px;height:24px;border-radius:50%}
+
+/* layout */
+.explore{display:grid;grid-template-columns:300px minmax(0,1fr);gap:16px;align-items:start}
+.side{position:sticky;top:76px;max-height:calc(100vh - 92px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:14px}
+.side-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.side-head h2{font-size:17px}
+.main{display:flex;flex-direction:column;gap:12px;min-width:0}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel);padding:7px 12px;border-radius:7px;cursor:pointer;font-weight:600;font-size:13px;white-space:nowrap}
+.btn:hover{border-color:var(--border)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.danger{color:var(--bad)}
+.btn.small{padding:4px 9px;font-size:12px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.linkbtn{background:none;border:0;color:var(--accent);cursor:pointer;padding:0;font-weight:600;font-size:12px}
+.search{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:7px;background:var(--panel-2)}
+.facet{border-top:1px solid var(--line-2);padding-top:12px}
+.facet h3{font-family:var(--body);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.opts{display:flex;flex-direction:column;gap:2px}
+.opts.scroll{max-height:176px;overflow:auto;padding-right:4px}
+.opt{display:flex;align-items:center;gap:8px;padding:3px 4px;border-radius:5px;cursor:pointer;font-size:13px}
+.opt:hover{background:var(--panel-2)}
+.opt input{accent-color:var(--accent);margin:0}
+.opt .lab{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.opt .n{font-family:var(--mono);font-size:11px;color:var(--faint)}
+.opt.zero{opacity:.45}
+.sw{width:10px;height:10px;border-radius:50%;flex:none}
+.facet .mini{width:100%;padding:5px 8px;border:1px solid var(--line);border-radius:6px;margin-bottom:6px;font-size:12px;background:var(--panel-2)}
+.check{display:flex;gap:8px;align-items:flex-start;font-size:13px;cursor:pointer}
+.check input{accent-color:var(--accent);margin-top:3px}
+
+/* year */
+.hist{display:block;width:100%;height:56px}
+.hist rect{fill:var(--line)}
+.hist rect.in{fill:var(--accent)}
+.range{position:relative;height:22px}
+.range input{position:absolute;inset:0;width:100%;pointer-events:none;appearance:none;-webkit-appearance:none;background:none;margin:0;height:22px}
+.range input::-webkit-slider-thumb{pointer-events:auto;-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--panel);border:2px solid var(--accent);cursor:pointer}
+.range input::-moz-range-thumb{pointer-events:auto;width:12px;height:12px;border-radius:50%;background:var(--panel);border:2px solid var(--accent);cursor:pointer}
+.range::before{content:"";position:absolute;left:0;right:0;top:10px;height:2px;background:var(--line)}
+.yrs{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px}
+
+/* stats */
+.bar{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.stat{display:flex;align-items:baseline;gap:6px}
+.stat b{font-family:var(--display);font-size:22px;font-stretch:80%;font-variant-numeric:tabular-nums}
+.stat span{color:var(--muted);font-size:12px}
+.bar .grow{flex:1}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:2px 4px 2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--ink);font-size:12px}
+.chip button{border:0;background:none;cursor:pointer;color:var(--muted);padding:0 4px;font-size:14px;line-height:1}
+
+/* map */
+.mapwrap{position:relative;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--ocean)}
+#map{height:clamp(380px,62vh,660px)}
+.leaflet-container{background:var(--ocean);font-family:var(--body)}
+.leaflet-bar a{background:var(--panel);color:var(--ink);border-bottom-color:var(--line)}
+.leaflet-bar a:hover{background:var(--panel-2)}
+.leaflet-control-scale-line{background:color-mix(in srgb,var(--panel) 80%,transparent);color:var(--ink);border-color:var(--muted)}
+.maptools{position:absolute;left:54px;top:10px;z-index:650;display:flex;gap:6px;flex-wrap:wrap}
+.maptools .btn{box-shadow:var(--shadow)}
+.legend{position:absolute;left:10px;bottom:28px;z-index:500;background:color-mix(in srgb,var(--panel) 92%,transparent);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12px;display:flex;flex-direction:column;gap:3px}
+.legend div{display:flex;align-items:center;gap:6px}
+.legend .ring{width:10px;height:10px;border-radius:50%;border:2px dashed var(--ink)}
+.bgctl{position:relative}
+.fprow{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer}
+.fprow input{accent-color:var(--accent);margin:0}
+.ramp{display:inline-flex;height:10px;border-radius:2px;overflow:hidden;flex:none;border:1px solid rgba(0,0,0,.15)}
+.ramp i{display:block;width:9px;height:100%}
+.fpsite{width:9px;height:9px;border-radius:50%;background:var(--ink);border:2px solid var(--panel);box-shadow:0 0 0 1px var(--ink)}
+.bgpop{position:absolute;left:0;top:calc(100% + 6px);width:250px;background:var(--panel);border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow);padding:10px 12px;display:flex;flex-direction:column;gap:6px;z-index:700;font-size:13px}
+.bgpop input[type=range]{width:100%;accent-color:var(--accent)}
+.bgpop p{margin:2px 0 0;font-size:11.5px}
+.legend .lh{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-top:4px}
+.legend .sq{width:10px;height:10px;border-radius:2px;flex:none;border:1px solid rgba(0,0,0,.15)}
+.legend details summary{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-top:4px}
+.legend{max-height:calc(100% - 90px);overflow:auto}
+.terrimg{image-rendering:auto}
+.emimg{image-rendering:pixelated;image-rendering:crisp-edges}
+#bgLegend,#fpLegend,#emLegend,#terrLegend{display:block!important}
+#terrLegend > div{display:flex;align-items:center;gap:6px}
+.lgbar{height:10px;width:170px;border-radius:2px;border:1px solid rgba(0,0,0,.15)}
+.lgticks{display:flex;justify-content:space-between;width:170px;font-size:10.5px}
+#fpLegend > div{display:flex;align-items:center;gap:6px}
+#bgLegend > div{display:flex;align-items:center;gap:6px}
+.coords{position:absolute;right:10px;bottom:34px;z-index:500;font-family:var(--mono);font-size:11px;color:var(--muted);background:color-mix(in srgb,var(--panel) 85%,transparent);padding:1px 6px;border-radius:4px}
+.pin{width:14px;height:14px;border-radius:50%;background:var(--c);border:2px solid var(--panel);box-shadow:0 0 0 1px rgba(0,0,0,.25)}
+.pin.multi{width:18px;height:18px;display:grid;place-items:center;font:600 9px/1 var(--mono);color:#fff}
+.pin.comm{border:2px dashed var(--ink)}
+.pin.st-Future{background:var(--panel);border:3px solid var(--c);box-shadow:0 0 0 1px rgba(0,0,0,.3)}
+.pin.multi.st-Future{color:var(--c)}
+.pin.st-Ended{opacity:.5}
+.legend .stf{width:11px;height:11px;border-radius:50%;border:3px solid var(--ink);background:var(--panel);flex:none}
+.legend .ste{width:11px;height:11px;border-radius:50%;background:var(--ink);opacity:.45;flex:none}
+.legend .sto{width:11px;height:11px;border-radius:50%;background:var(--ink);flex:none}
+.trkbtn{margin-top:2px}
+.pin.sel{box-shadow:0 0 0 3px var(--ink),0 0 0 5px var(--panel)}
+.cl{width:40px;height:40px;border-radius:50%;background:var(--p);display:grid;place-items:center;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.cl span{width:28px;height:28px;border-radius:50%;background:var(--panel);display:grid;place-items:center;font:600 11px/1 var(--mono);color:var(--ink)}
+.leaflet-tooltip{background:var(--panel);color:var(--ink);border-color:var(--line);box-shadow:var(--shadow)}
+
+/* detail */
+.detail{position:absolute;top:10px;right:10px;bottom:10px;width:min(380px,calc(100% - 20px));z-index:600;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden}
+.detail header{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:flex-start}
+.detail header h2{font-size:18px}
+.detail .body{overflow:auto;padding:12px 14px;display:flex;flex-direction:column;gap:12px}
+.x{margin-left:auto;border:0;background:var(--panel-2);border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:16px;flex:none}
+.rec{border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.rec h4{margin:0;font-size:14px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.rec dl{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;margin:0;font-size:12.5px}
+.rec dt{color:var(--muted)}
+.rec dd{margin:0;overflow-wrap:anywhere}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:1px 8px;border-radius:999px;font-size:11px;font-weight:600;border:1px solid var(--line);background:var(--panel-2);white-space:nowrap}
+.pill.op-Operational{background:var(--ok-soft);color:var(--ok);border-color:transparent}
+.pill.op-Future,.pill.op-Planned,.pill.op-Potential{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.pill.op-Ended{color:var(--muted)}
+.pill.pending{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.pill.verified{background:var(--ok-soft);color:var(--ok);border-color:transparent}
+.pill.rejected{background:var(--bad-soft);color:var(--bad);border-color:transparent}
+.gas{font-family:var(--mono);font-size:11.5px;padding:0 6px;border-radius:4px;background:var(--panel-2);border:1px solid var(--line)}
+.gas.CH4{background:var(--accent-soft);border-color:transparent;font-weight:600}
+
+/* table */
+.tablecard{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.tablehead{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 12px;border-bottom:1px solid var(--line)}
+.tablehead h2{font-size:17px;margin-right:auto}
+.tscroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--panel-2)}
+th button{all:unset;cursor:pointer}
+th button:focus-visible{outline:2px solid var(--accent)}
+td{padding:7px 10px;border-bottom:1px solid var(--line-2);vertical-align:top}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:var(--panel-2)}
+tbody tr.sel{background:var(--accent-soft)}
+td.name{font-weight:600;max-width:260px}
+td.name small{display:block;font-weight:400;color:var(--faint);font-family:var(--mono);font-size:11px}
+td .gases{display:flex;gap:3px;flex-wrap:wrap}
+td a{white-space:nowrap}
+.pager{display:flex;align-items:center;gap:8px;padding:8px 12px;justify-content:flex-end;font-size:12px;color:var(--muted)}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+
+/* pages */
+.page{max-width:1100px;margin-inline:auto;display:flex;flex-direction:column;gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
+.card > h2{font-size:20px;margin-bottom:4px}
+.card > p.lead{color:var(--muted);margin:0 0 14px;max-width:70ch}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.step{border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:13px;display:flex;flex-direction:column;gap:2px}
+.step b{font-family:var(--display);font-stretch:85%;font-size:15px}
+.step.done{border-color:var(--ok);background:var(--ok-soft)}
+.step.now{border-color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 16px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 16px}
+.full{grid-column:1/-1}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label,.field .lbl{font-size:12px;font-weight:600}
+.field label .req{color:var(--bad)}
+.field input,.field select,.field textarea{padding:8px 10px;border:1px solid var(--line);border-radius:7px;background:var(--panel-2);width:100%}
+.field textarea{min-height:70px;resize:vertical}
+.field .hint{font-size:11.5px;color:var(--muted)}
+.field .err{font-size:11.5px;color:var(--bad)}
+.field.bad input,.field.bad select{border-color:var(--bad)}
+.boxes{display:flex;flex-wrap:wrap;gap:6px 14px;padding-top:4px}
+.boxes label{display:flex;gap:6px;align-items:center;font-weight:400;font-size:13px}
+.boxes input{accent-color:var(--accent)}
+fieldset{border:0;padding:0;margin:0;display:contents}
+.formsec{border-top:1px solid var(--line-2);padding-top:14px;margin-top:4px}
+.formsec h3{font-size:15px;margin-bottom:10px}
+.locgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+#pickmap{height:280px;border:1px solid var(--line);border-radius:8px}
+.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.note{padding:10px 12px;border-radius:8px;font-size:13px;border:1px solid var(--line);background:var(--panel-2)}
+.note.ok{background:var(--ok-soft);border-color:transparent;color:var(--ok)}
+.note.warn{background:var(--warn-soft);border-color:transparent;color:var(--warn)}
+.note.bad{background:var(--bad-soft);border-color:transparent;color:var(--bad)}
+.list{display:flex;flex-direction:column}
+.li{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line-2);flex-wrap:wrap}
+.li .t{flex:1;min-width:200px}
+.li .t b{display:block}
+.li .t small{color:var(--muted)}
+.prof{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.prof img{width:44px;height:44px;border-radius:50%}
+.prof .t{flex:1;min-width:200px}
+.prof .t b{font-size:16px}
+.prev{max-height:320px;overflow:auto;border:1px solid var(--line);border-radius:8px}
+.prev td,.prev th{font-size:12px;padding:5px 8px}
+.prose{max-width:72ch}
+.prose p,.prose li{color:var(--ink)}
+.prose h3{font-size:17px;margin-top:8px}
+.imp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.imp div{border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:13px}
+.imp b{display:block;font-family:var(--display);font-stretch:85%;font-size:15px;margin-bottom:2px}
+details summary{cursor:pointer;font-weight:600}
+.log{font-family:var(--mono);font-size:12px;color:var(--muted);max-height:260px;overflow:auto;padding-left:18px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:8px;z-index:3000;font-weight:600;box-shadow:var(--shadow);max-width:calc(100% - 32px)}
+.copybox{width:100%;height:140px;font-family:var(--mono);font-size:11px}
+.onlymobile{display:none}
+
+@media (max-width:900px){
+  .explore{grid-template-columns:1fr}
+  .side{position:fixed;inset:0 auto 0 0;top:0;width:min(340px,88vw);max-height:none;height:100%;z-index:2000;border-radius:0;transform:translateX(-105%);transition:transform .2s ease;padding-top:calc(14px + env(safe-area-inset-top,0px))}
+  .side.open{transform:none;box-shadow:var(--shadow)}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:1900}
+  .onlymobile{display:inline-flex}
+  .detail{position:static;width:auto;border-radius:0;border:0;border-top:1px solid var(--line);box-shadow:none;max-height:none}
+  .mapwrap{display:flex;flex-direction:column}
+  #map{height:clamp(320px,55vh,520px)}
+  .steps,.grid,.grid3,.locgrid,.imp{grid-template-columns:1fr}
+  .brand small{display:none}
+}
+@media (prefers-reduced-motion:reduce){.side{transition:none}}
+</style>
+
+<header class="top">
+  <div class="brand"><h1>Africa <b>CH₄</b> Atlas</h1><small>Methane observation records across the continent · <a href="../index.html" style="color:inherit">CH₄ ALERT home</a></small></div>
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button class="tab" role="tab" id="t-explore" data-tab="explore" aria-selected="true">Explore</button>
+    <button class="tab" role="tab" id="t-contribute" data-tab="contribute" aria-selected="false">Suggest a site</button>
+    <button class="tab" role="tab" id="t-review" data-tab="review" aria-selected="false" hidden>Review <span class="dot" id="pendingDot" hidden>0</span></button>
+    <button class="tab" role="tab" id="t-about" data-tab="about" aria-selected="false">About</button>
+  </nav>
+  <div class="who" id="who"></div>
+</header>
+
+<!-- EXPLORE -->
+<section id="p-explore" class="explore">
+  <aside class="side" id="side" aria-label="Filters">
+    <div class="side-head"><h2>Filters</h2><div style="display:flex;gap:6px"><button class="btn small" id="reset">Reset all</button><button class="btn small onlymobile" id="closeSide">Done</button></div></div>
+    <input class="search" id="q" type="search" placeholder="Search site, network, person, institution…" aria-label="Search records">
+    <div class="facet" id="yearFacet">
+      <h3>Observation years <button class="linkbtn" id="yearReset">Any</button></h3>
+      <svg class="hist" id="hist" viewBox="0 0 280 56" preserveAspectRatio="none" aria-hidden="true"></svg>
+      <div class="range"><input type="range" id="y0" aria-label="From year"><input type="range" id="y1" aria-label="To year"></div>
+      <div class="yrs"><span id="y0l"></span><span id="y1l"></span></div>
+      <label class="check" style="margin-top:6px"><input type="checkbox" id="undated" checked> Include records with no dates <span class="muted mono" id="undatedN"></span></label>
+    </div>
+    <div class="facet" id="emctl">
+      <h3>Map layers</h3>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px"><label for="colorBy" style="flex:none">Colour sites by</label><select id="colorBy" class="mini" style="margin:0;flex:1"><option value="eco">Ecosystem</option><option value="sys">Observing system</option></select></div>
+      <label class="opt"><input type="checkbox" id="lyTrk"><span class="ramp" style="width:45px;background:repeating-linear-gradient(90deg,#2b2b2b 0 7px,transparent 7px 10px)"></span><span class="lab">Aircraft & mobile tracks</span><span class="n">17</span></label>
+      <div style="height:6px"></div>
+      <label class="opt"><input type="checkbox" id="bioOn"><span class="ramp" id="bioRamp" style="width:45px"></span><span class="lab">Biomes</span><span class="n">RESOLVE 2017</span></label>
+      <label class="check" style="font-size:12px;margin:2px 0 0 26px"><input type="checkbox" id="ecoDetail"> Show the <span id="nEco">124</span> ecoregions instead</label>
+      <label for="bgOp" class="muted" style="font-size:11.5px;margin-top:6px;display:block">Biome layer opacity</label>
+      <input type="range" id="bgOp" min="10" max="90" value="45" style="width:100%;accent-color:var(--accent)">
+      <div style="height:10px"></div>
+      <label class="opt"><input type="checkbox" id="lyElev"><span class="ramp" style="width:45px;background:linear-gradient(90deg,#f6f3ee 0.0%,#e6ddcf 7.8%,#d2c4ae 17.6%,#b3a289 31.4%,#8f806b 49.0%,#6f6354 70.6%,#c9c5bf 88.2%,#f4f4f2 100.0%)"></span><span class="lab" title="Digital terrain model">Elevation (terrain)</span><span class="n">m</span></label>
+      <input type="range" id="opElev" min="15" max="100" value="80" aria-label="Elevation opacity" style="width:100%;accent-color:var(--accent)">
+      <label class="opt"><input type="checkbox" id="lyHand"><span class="ramp" style="width:45px;background:linear-gradient(90deg,#0d4f4f 0.0%,#16655f 2.0%,#2c8278 5.3%,#55a497 10.0%,#91c8bc 20.0%,#c9e5de 40.0%,#eef7f4 100.0%)"></span><span class="lab" title="Height above nearest drainage">Height above drainage</span><span class="n">HAND</span></label>
+      <input type="range" id="opHand" min="15" max="100" value="80" aria-label="HAND opacity" style="width:100%;accent-color:var(--accent)">
+      <label class="opt"><input type="checkbox" id="lyWater"><span class="ramp" style="width:45px;background:linear-gradient(90deg,#4a9bd6 0 40%,#ffffff00 40% 50%,#1f6fb2 50% 70%,#ffffff00 70% 80%,#8dbbe6 80%)"></span><span class="lab">Water bodies</span><span class="n">lakes · rivers</span></label>
+      <div style="height:10px"></div>
+      <label class="opt"><input type="checkbox" id="emOn"><span class="ramp" style="width:45px;background:linear-gradient(90deg,#ffffcc 0.0%,#ffeda0 12.5%,#fed976 25.0%,#feb24c 37.5%,#fd8d3c 50.0%,#fc4e2a 62.5%,#e31a1c 75.0%,#bd0026 87.5%,#800026 100.0%)"></span><span class="lab">Total CH₄ emissions</span><span class="n">1°</span></label>
+      <label for="emOp" class="muted" style="font-size:11.5px;margin-top:6px;display:block">Emission layer opacity</label>
+      <input type="range" id="emOp" min="15" max="100" value="70" style="width:100%;accent-color:var(--accent)">
+      <p class="muted" style="font-size:11.5px;margin:4px 0 0">Biomes and ecoregions: RESOLVE Ecoregions 2017 (Dinerstein et al., <i>BioScience</i> 2017), CC BY 4.0, clipped to Africa. Emissions: total posterior CH₄ flux, 0–2 g CH₄ m⁻² month⁻¹, from the project footprint figure. Emissions draw over the biomes; footprints draw on top of both. Elevation: AWS Terrain Tiles (SRTM/GMTED/ETOPO1), resampled to 0.05°. HAND and streams were computed from that elevation grid (D8 flow, drainage threshold ≈600 km²), so they show regional relief, not field-scale wetness. Lakes, reservoirs and major rivers: Natural Earth 1:10m.</p>
+    </div>
+    <div class="facet" id="fpctl">
+      <h3>EM27 / 3-day footprints <span style="display:flex;gap:8px"><button class="linkbtn" id="fpAll">All</button><button class="linkbtn" id="fpNone">None</button></span></h3>
+      <div class="opts" id="fpRows"></div>
+      <p class="muted" style="font-size:11.5px;margin:6px 0 0">Mean back-trajectory footprints of the five new total-column sites. Contours at 10–50 ppm per kgC m⁻² h⁻¹, darker = stronger. Traced from the project footprint figure.</p>
+    </div>
+    <div id="facets"></div>
+    <div class="facet"><label class="check"><input type="checkbox" id="inView"> Only records inside the current map view</label></div>
+  </aside>
+  <div class="main">
+    <div class="bar" id="stats"></div>
+    <div class="mapwrap">
+      <div id="map" role="application" aria-label="Map of observation sites"></div>
+      <div class="maptools">
+        <button class="btn small onlymobile" id="openSide">Filters</button>
+        <button class="btn small" id="fit">Zoom to results</button>
+        <button class="btn small" id="home">Africa</button>
+      </div>
+      <div class="legend" aria-label="Legend">
+        <div id="siteLegend" style="display:block!important"></div>
+        <div><span class="sto"></span>Operational</div>
+        <div><span class="stf"></span>Future (planned or candidate)</div>
+        <div><span class="ste"></span>Ended</div>
+        <div><span class="ring"></span>Community record</div>
+        <div id="trkLegend" style="display:block!important"></div>
+        <div id="fpLegend"></div>
+        <div id="emLegend"></div>
+        <div id="terrLegend"></div>
+        <div id="bgLegend"></div>
+      </div>
+      <div class="coords" id="coords">—</div>
+      <div class="detail" id="detail" hidden></div>
+    </div>
+    <div class="tablecard">
+      <div class="tablehead">
+        <h2>Records</h2>
+        <span class="muted" id="tcount"></span>
+        <button class="btn small" id="dlcsv">Download CSV</button>
+      </div>
+      <div class="tscroll"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+      <div class="pager" id="pager"></div>
+      <div id="copyfallback" hidden style="padding:0 12px 12px"><p class="muted" style="margin:0 0 6px">Downloads are not available in this view. Copy the CSV below instead.</p><textarea class="copybox" id="copytext" readonly></textarea></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTRIBUTE -->
+<section id="p-contribute" class="page" hidden>
+  <div class="card">
+    <h2>Suggest a site or a correction</h2>
+    <p class="lead">This is the public, read-only copy of the Africa CH₄ Atlas. To add a methane observation site, report a status change or correct a record, contact the CH₄ ALERT team through the <a href="../index.html#contact">project page</a>. Please include the site name, coordinates (decimal degrees), observing system, instrument, gases and parameters measured, start and end dates, status, network and a data or publication link if there is one. Reviewed records are added in the next update.</p>
+    <div class="steps" id="steps" hidden></div>
+  </div>
+  <div class="card" id="acct"></div>
+  <div class="card" id="formcard" hidden>
+    <h2 id="formtitle">New record</h2>
+    <p class="lead">Fields marked <span style="color:var(--bad)">*</span> are required. Click the map to place the site, or type coordinates in decimal degrees.</p>
+    <form id="recform" novalidate>
+      <div class="formsec" style="border:0;padding-top:0;margin-top:0">
+        <h3>Location</h3>
+        <div class="locgrid">
+          <div class="grid" style="align-content:start">
+            <div class="field full"><label for="f_name">Site name <span class="req">*</span></label><input id="f_name" maxlength="200" placeholder="e.g. Lake Kivu, Gisenyi basin"></div>
+            <div class="field"><label for="f_lat">Latitude (°) <span class="req">*</span></label><input id="f_lat" inputmode="decimal" placeholder="-1.6893"><span class="hint">South is negative</span></div>
+            <div class="field"><label for="f_lon">Longitude (°) <span class="req">*</span></label><input id="f_lon" inputmode="decimal" placeholder="29.2461"><span class="hint">West is negative</span></div>
+            <div class="field"><label for="f_elev">Elevation (m a.s.l.)</label><input id="f_elev" inputmode="decimal"></div>
+            <div class="field"><label for="f_country">Country <span class="req">*</span></label><select id="f_country"></select></div>
+            <div class="field full"><label for="f_eco">Ecosystem <span class="req">*</span></label><select id="f_eco"><option value="">Choose…</option><option>River</option><option>Lake</option><option>Land</option><option>Geology</option></select><span class="hint">Geology = natural gas seeps, volcanic or geothermal sources</span></div>
+          </div>
+          <div class="field"><span class="lbl">Place on map</span><div id="pickmap"></div><span class="hint">Click to drop the pin; drag it to adjust.</span></div>
+        </div>
+      </div>
+      <div class="formsec">
+        <h3>Measurement</h3>
+        <div class="grid3">
+          <div class="field"><label for="f_sys">Observing system <span class="req">*</span></label><select id="f_sys"><option value="">Choose…</option><option>Eddy-covariance flux tower</option><option>Atmospheric in-situ station</option><option>Flask sampling</option><option>Total-column FTIR</option><option>Flux chamber</option><option>Aircraft</option><option>Mobile flux tower</option><option>Boat sampling (rivers & lakes)</option><option>Not specified</option></select></div>
+          <div class="field"><label for="f_inst">Instrument</label><input id="f_inst" list="dl_inst" placeholder="e.g. Picarro G2301"></div>
+          <div class="field"><label for="f_net">Network or project</label><input id="f_net" list="dl_net" placeholder="e.g. SAEON"></div>
+          <div class="field"><span class="lbl">Gases measured <span style="color:var(--bad)">*</span></span><div class="boxes" id="f_gas"><label><input type="checkbox" value="CH4"> CH₄</label><label><input type="checkbox" value="CO2"> CO₂</label><label><input type="checkbox" value="N2O"> N₂O</label><label><input type="checkbox" value="13C-CH4"> δ¹³C‑CH₄</label></div></div>
+          <div class="field"><span class="lbl">Parameter</span><div class="boxes" id="f_par"><label><input type="checkbox" value="Flux"> Flux</label><label><input type="checkbox" value="Surface concentration"> Surface conc.</label><label><input type="checkbox" value="Column concentration"> Column conc.</label></div></div>
+          <div class="field"><label for="f_freq">Frequency</label><select id="f_freq"><option value="">Not specified</option><option>Periodic</option><option>30 min</option><option>Hourly</option><option>Daily</option><option>One-off campaign</option></select></div>
+          <div class="field"><label for="f_sd">Start date <span class="req">*</span></label><input id="f_sd" placeholder="2019 or 2019-06-22"></div>
+          <div class="field"><label for="f_ed">End date</label><input id="f_ed" placeholder="Leave blank if ongoing"></div>
+          <div class="field"><label for="f_op">Status <span class="req">*</span></label><select id="f_op"><option value="">Choose…</option><option value="Operational">Operational</option><option value="Future|Installed, not yet operational">Future: installed, not yet operational</option><option value="Future|Funded / planned">Future: funded or planned</option><option value="Future|Candidate">Future: candidate site</option><option value="Ended">Ended</option></select></div>
+        </div>
+      </div>
+      <div class="formsec">
+        <h3>Contact and data access</h3>
+        <div class="grid3">
+          <div class="field"><label for="f_cn">Contact name</label><input id="f_cn"></div>
+          <div class="field"><label for="f_ce">Contact email</label><input id="f_ce" type="email"></div>
+          <div class="field"><label for="f_org">Institution</label><input id="f_org"></div>
+          <div class="field"><label for="f_data">Data URL</label><input id="f_data" placeholder="https://zenodo.org/…"></div>
+          <div class="field"><label for="f_pub">Publication</label><input id="f_pub" placeholder="DOI (10.xxxx/…) or URL"></div>
+          <div class="field"><label for="f_oa">Open access</label><select id="f_oa"><option value="">Unknown</option><option>Yes</option><option>No</option><option>Embargoed</option></select></div>
+          <div class="field full"><label for="f_notes">Notes</label><textarea id="f_notes" maxlength="1500" placeholder="Method, depth, sampling design, anything a data user should know"></textarea></div>
+        </div>
+      </div>
+      <div id="formmsg"></div>
+      <div class="actions"><button class="btn primary" type="submit" id="f_submit">Submit record</button><button class="btn" type="button" id="f_clear">Clear form</button><button class="btn" type="button" id="f_cancel" hidden>Cancel edit</button></div>
+    </form>
+  </div>
+  <div class="card" id="bulkcard" hidden>
+    <h2>Upload many records (CSV)</h2>
+    <p class="lead">Use the template, or a CSV with the same column headers as the original Africa Methane spreadsheet. Each row is checked before anything is saved.</p>
+    <div class="actions" style="margin-top:0"><button class="btn" id="tpl">Download template</button><label class="btn primary" for="csvfile">Choose CSV file</label><input type="file" id="csvfile" accept=".csv,text/csv" hidden></div>
+    <div id="bulkout"></div>
+  </div>
+  <div class="card" id="minecard" hidden>
+    <h2>Your submissions</h2>
+    <div id="mine"></div>
+  </div>
+</section>
+
+<!-- REVIEW -->
+<section id="p-review" class="page" hidden>
+  <div class="card"><h2>Review queue</h2><p class="lead">Records waiting for a coordinator. Verifying makes a record part of the default view; returning it sends it back to the contributor with your reason.</p><div id="queue"></div></div>
+  <div class="card"><h2>Submission passcode</h2><p class="lead" id="pcstate"></p>
+    <div class="grid" style="max-width:560px">
+      <div class="field"><label for="np1">New passcode</label><input id="np1" type="password" autocomplete="new-password" minlength="8"></div>
+      <div class="field"><label for="np2">Repeat passcode</label><input id="np2" type="password" autocomplete="new-password"></div>
+    </div>
+    <div id="pcmsg"></div>
+    <div class="actions"><button class="btn primary" id="setpc">Set passcode</button><span class="muted" style="font-size:12px">Changing it asks every contributor to enter the new one before their next submission.</span></div>
+  </div>
+  <div class="card"><h2>Contributors</h2><div id="contribs"></div></div>
+</section>
+
+<!-- ABOUT -->
+<section id="p-about" class="page" hidden>
+  <div class="card prose">
+    <h2>About this atlas</h2>
+    <p>The atlas maps where methane (CH₄) and related greenhouse gases have been observed in Africa: river and lake sampling campaigns, eddy-covariance and atmospheric towers, chambers, aircraft transects, total-column FTIR stations and flask sites. It starts from the <i>Africa Methane database</i> spreadsheet (<span id="nbase"></span> records) and grows as researchers add their own.</p>
+    <h3>How to use it</h3>
+    <ul>
+      <li>Combine filters on the left. Options within one group widen the result (CH₄ <i>or</i> N₂O); different groups narrow it. The number beside each option shows how many records you would get.</li>
+      <li>Drag the year handles to keep records whose observation period overlaps that range.</li>
+      <li>Click a map point to see every record at that location. Click a table row to fly to it.</li>
+      <li>Tick “Only records inside the current map view” to use the map as a spatial filter.</li>
+      <li>“Download CSV” exports exactly the records you have filtered, with clean column names.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h2>What changed compared with the carbon-flux site explorer</h2>
+    <p class="lead">The COSIMA/ARGO explorer was the model. These are the gaps this version addresses.</p>
+    <div class="imp">
+      <div><b>Instant filtering</b>Everything runs in the page, so the map, counts and table update as you click, with no server round-trip.</div>
+      <div><b>Counts on every option</b>Each filter shows how many records it would return, so you never land on an empty result.</div>
+      <div><b>Map, table and details stay in sync</b>Selecting a point highlights its rows, and selecting a row flies the map there. The map view can itself be a filter.</div>
+      <div><b>Overlapping sites stay readable</b>Nearby points cluster, and each cluster ring shows the ecosystem mix inside it.</div>
+      <div><b>Plain CSV export</b>One click exports the filtered records as a CSV, with no zip file to unpack.</div>
+      <div><b>Community updates</b>Researchers can suggest new sites and corrections; the coordinating team reviews them and adds them in regular updates.</div>
+      <div><b>Cleaned data</b>Country names, gas labels, dates and coordinates are normalised. Every change is listed below.</div>
+      <div><b>Works on a phone and in dark mode</b>Filters move into a drawer on small screens, and the colours follow your theme.</div>
+    </div>
+  </div>
+  <div class="card prose">
+    <h2>Data notes</h2>
+    <p><b>How the infrastructure list was built (October 2026).</b> The original spreadsheet was merged with the project shapefiles (curated operational, future and historical subsets from March 2026; the Yangambi and mobile flux towers; MOYA/ZWAMPS flight tracks), the African sites in NOAA ObsPack GLOBALVIEWplus v7 and its methane-isotope flask series, and the SPARK total-column and eddy-covariance site list. Records were matched within a few kilometres when they had the same observing system and a similar name or network. Gaps were filled without overwriting existing values, and an operational record was never downgraded by an older source. Every record has three standard fields: <i>Status</i> (Operational, Future or Ended; Future is split into funded/planned and candidate), <i>Observing system</i> (one of nine standard types) and <i>Infrastructure type</i> (fixed station, mobile platform or field campaign). The <i>Data source</i> filter shows where each record came from. Contact details from the project site list were not imported.</p>
+    <details><summary>Integration log (<span id="nmerge"></span> changes)</summary><ul class="log" id="mergelog"></ul></details>
+    <p><b>How the map colours are organised.</b> Each layer has its own colour family, so you can stack them without mixing them up. Sites are bold dots with a white ring. Footprints are contour lines only, in four dark hues: indigo (January), green (March), purple (July) and slate (October). Total CH₄ emissions use the only warm scale, yellow to dark red. Water is blue. HAND is teal and fades out on high ground. Elevation is a neutral stone grey with hill shading. Biomes and ecoregions use muted pastel versions of the RESOLVE colours, so the layers above them stay readable.</p>
+    <p><b>Terrain and water layers</b> (Map layers in the left panel), all clipped to Africa: <i>Elevation</i> comes from the open AWS Terrain Tiles (a blend of SRTM, GMTED2010 and ETOPO1), averaged to a 0.05° grid (about 5.5 km) and shaded for relief. <i>Height above nearest drainage (HAND)</i> was computed from that grid: D8 flow directions, a drainage network wherever more than about 600 km² drains to a cell, then each cell's height above the channel it drains to. At this resolution it shows regional relief, so read it as “low-lying, flood-prone ground” rather than field-scale wetness. Large flat basins such as the Congo Cuvette, Sudd, Inner Niger Delta, Lake Chad and Okavango, as well as some Saharan depressions, come out near zero. <i>Water bodies</i> combines Natural Earth 1:10m lakes, reservoirs and major rivers with smaller streams traced from the same elevation grid. In the Sahara these follow dry valleys (wadis).</p>
+    <p>The <b>Total CH₄ emissions</b> layer (switch it in the left panel, under Map layers) is the total posterior methane flux (g CH₄ m⁻² month⁻¹) shown behind the project's footprint figure, rebuilt on its 1° grid by reading each cell's colour against the figure's colour scale. Values are accurate to about ±0.05 at low emissions and are capped at 2, the top of that scale. Grey cells are those the figure leaves uncoloured (very low or masked). Point at the map to read a cell's value.</p>
+    <p>The <b>Footprints</b> layer shows the mean 3-day atmospheric footprints of five new total-column sites (Ikenne, Dja-Somalomo, Kigali, Assosa and Maun) for January, March, July and October, at contour levels of 10–50 ppm per kgC m⁻² h⁻¹. They were traced from the project's footprint figure (left-hand “Back 3 days” panels) and placed on the map using the sites' coordinates, so their outlines are accurate to roughly a quarter of a degree. The emission background and site labels from that figure are not included. The Kigali footprint was originally computed at 1.96° N, but the city lies at 1.96° S (1.9617° S, 30.0642° E). Its contours have been moved 3.92° south to the correct position (Oct 2026); where they join the Assosa (Ethiopia) footprint, the shift fades out smoothly towards Assosa so the shared contours stay continuous. This is an approximation: the shape still reflects the winds at the original point, so it should be replaced once the footprint model is re-run for the correct coordinates.</p>
+    <p>The map background shows the <a href="https://developers.google.com/earth-engine/datasets/catalog/RESOLVE_ECOREGIONS_2017" target="_blank" rel="noopener">RESOLVE Ecoregions 2017</a> dataset (Dinerstein et al. 2017, “An Ecoregions-Based Approach to Protecting Half the Terrestrial Realm”, <i>BioScience</i> 67:534–545, CC BY 4.0), clipped to Africa's land and simplified to about 1.5 km. Switch it on or off under Map layers in the left panel, where you can also show the <span id="nEco2"></span> individual ecoregions instead of biomes. Every record is tagged with the ecoregion and biome at its coordinates, so you can filter by biome and export both columns in the CSV. RESOLVE does not map large lakes, so records on Lake Victoria, Kivu, Tanganyika and similar are tagged “Open water (large lake)”. A few island or offshore records fall outside the mapped land.</p>
+    <p>Each row of the spreadsheet is one <i>record</i>: a site, a system and an observation period. Several records often share a location, for example a tower and a chamber at the same station. Original IDs are shown where they exist. Every record also has a stable key (<span class="mono">AM0002</span>, …) based on its spreadsheet row.</p>
+    <details><summary>Corrections applied on import (<span id="nfix"></span>)</summary><ul class="log" id="fixlog"></ul></details>
+    <p class="muted" style="font-size:12.5px;margin-top:12px">Also normalised: country names (“Congo, the Democratic Republic of the” → DR Congo, stray quotes removed), measured parameters, status labels (Yes/No/Future → Operational/Ended/Planned), DOIs turned into links, and years taken from the observation dates when the year columns were empty.</p>
+  </div>
+</section>
+
+<div class="scrim" id="scrim" hidden></div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<datalist id="dl_net"></datalist><datalist id="dl_inst"></datalist>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script>// https://github.com/topojson/topojson-client v3.1.0 Copyright 2019 Mike Bostock
+!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports):"function"==typeof define&&define.amd?define(["exports"],t):t((e=e||self).topojson=e.topojson||{})}(this,function(e){"use strict";function t(e){return e}function r(e){if(null==e)return t;var r,n,o=e.scale[0],a=e.scale[1],i=e.translate[0],c=e.translate[1];return function(e,t){t||(r=n=0);var u=2,f=e.length,s=new Array(f);for(s[0]=(r+=e[0])*o+i,s[1]=(n+=e[1])*a+c;u<f;)s[u]=e[u],++u;return s}}function n(e){var t,n=r(e.transform),o=1/0,a=o,i=-o,c=-o;function u(e){(e=n(e))[0]<o&&(o=e[0]),e[0]>i&&(i=e[0]),e[1]<a&&(a=e[1]),e[1]>c&&(c=e[1])}function f(e){switch(e.type){case"GeometryCollection":e.geometries.forEach(f);break;case"Point":u(e.coordinates);break;case"MultiPoint":e.coordinates.forEach(u)}}for(t in e.arcs.forEach(function(e){for(var t,r=-1,u=e.length;++r<u;)(t=n(e[r],r))[0]<o&&(o=t[0]),t[0]>i&&(i=t[0]),t[1]<a&&(a=t[1]),t[1]>c&&(c=t[1])}),e.objects)f(e.objects[t]);return[o,a,i,c]}function o(e,t){var r=t.id,n=t.bbox,o=null==t.properties?{}:t.properties,i=a(e,t);return null==r&&null==n?{type:"Feature",properties:o,geometry:i}:null==n?{type:"Feature",id:r,properties:o,geometry:i}:{type:"Feature",id:r,bbox:n,properties:o,geometry:i}}function a(e,t){var n=r(e.transform),o=e.arcs;function a(e,t){t.length&&t.pop();for(var r=o[e<0?~e:e],a=0,i=r.length;a<i;++a)t.push(n(r[a],a));e<0&&function(e,t){for(var r,n=e.length,o=n-t;o<--n;)r=e[o],e[o++]=e[n],e[n]=r}(t,i)}function i(e){return n(e)}function c(e){for(var t=[],r=0,n=e.length;r<n;++r)a(e[r],t);return t.length<2&&t.push(t[0]),t}function u(e){for(var t=c(e);t.length<4;)t.push(t[0]);return t}function f(e){return e.map(u)}return function e(t){var r,n=t.type;switch(n){case"GeometryCollection":return{type:n,geometries:t.geometries.map(e)};case"Point":r=i(t.coordinates);break;case"MultiPoint":r=t.coordinates.map(i);break;case"LineString":r=c(t.arcs);break;case"MultiLineString":r=t.arcs.map(c);break;case"Polygon":r=f(t.arcs);break;case"MultiPolygon":r=t.arcs.map(f);break;default:return null}return{type:n,coordinates:r}}(t)}function i(e,t){var r={},n={},o={},a=[],i=-1;function c(e,t){for(var n in e){var o=e[n];delete t[o.start],delete o.start,delete o.end,o.forEach(function(e){r[e<0?~e:e]=1}),a.push(o)}}return t.forEach(function(r,n){var o,a=e.arcs[r<0?~r:r];a.length<3&&!a[1][0]&&!a[1][1]&&(o=t[++i],t[i]=r,t[n]=o)}),t.forEach(function(t){var r,a,i=function(t){var r,n=e.arcs[t<0?~t:t],o=n[0];e.transform?(r=[0,0],n.forEach(function(e){r[0]+=e[0],r[1]+=e[1]})):r=n[n.length-1];return t<0?[r,o]:[o,r]}(t),c=i[0],u=i[1];if(r=o[c])if(delete o[r.end],r.push(t),r.end=u,a=n[u]){delete n[a.start];var f=a===r?r:r.concat(a);n[f.start=r.start]=o[f.end=a.end]=f}else n[r.start]=o[r.end]=r;else if(r=n[u])if(delete n[r.start],r.unshift(t),r.start=c,a=o[c]){delete o[a.end];var s=a===r?r:a.concat(r);n[s.start=a.start]=o[s.end=r.end]=s}else n[r.start]=o[r.end]=r;else n[(r=[t]).start=c]=o[r.end=u]=r}),c(o,n),c(n,o),t.forEach(function(e){r[e<0?~e:e]||a.push([e])}),a}function c(e,t,r){var n,o,a;if(arguments.length>1)n=function(e,t,r){var n,o=[],a=[];function i(e){var t=e<0?~e:e;(a[t]||(a[t]=[])).push({i:e,g:n})}function c(e){e.forEach(i)}function u(e){e.forEach(c)}return function e(t){switch(n=t,t.type){case"GeometryCollection":t.geometries.forEach(e);break;case"LineString":c(t.arcs);break;case"MultiLineString":case"Polygon":u(t.arcs);break;case"MultiPolygon":!function(e){e.forEach(u)}(t.arcs)}}(t),a.forEach(null==r?function(e){o.push(e[0].i)}:function(e){r(e[0].g,e[e.length-1].g)&&o.push(e[0].i)}),o}(0,t,r);else for(o=0,n=new Array(a=e.arcs.length);o<a;++o)n[o]=o;return{type:"MultiLineString",arcs:i(e,n)}}function u(e,t){var r={},n=[],o=[];function c(e){e.forEach(function(t){t.forEach(function(t){(r[t=t<0?~t:t]||(r[t]=[])).push(e)})}),n.push(e)}function u(t){return function(e){for(var t,r=-1,n=e.length,o=e[n-1],a=0;++r<n;)t=o,o=e[r],a+=t[0]*o[1]-t[1]*o[0];return Math.abs(a)}(a(e,{type:"Polygon",arcs:[t]}).coordinates[0])}return t.forEach(function e(t){switch(t.type){case"GeometryCollection":t.geometries.forEach(e);break;case"Polygon":c(t.arcs);break;case"MultiPolygon":t.arcs.forEach(c)}}),n.forEach(function(e){if(!e._){var t=[],n=[e];for(e._=1,o.push(t);e=n.pop();)t.push(e),e.forEach(function(e){e.forEach(function(e){r[e<0?~e:e].forEach(function(e){e._||(e._=1,n.push(e))})})})}}),n.forEach(function(e){delete e._}),{type:"MultiPolygon",arcs:o.map(function(t){var n,o=[];if(t.forEach(function(e){e.forEach(function(e){e.forEach(function(e){r[e<0?~e:e].length<2&&o.push(e)})})}),(n=(o=i(e,o)).length)>1)for(var a,c,f=1,s=u(o[0]);f<n;++f)(a=u(o[f]))>s&&(c=o[0],o[0]=o[f],o[f]=c,s=a);return o}).filter(function(e){return e.length>0})}}function f(e,t){for(var r=0,n=e.length;r<n;){var o=r+n>>>1;e[o]<t?r=o+1:n=o}return r}function s(e){if(null==e)return t;var r,n,o=e.scale[0],a=e.scale[1],i=e.translate[0],c=e.translate[1];return function(e,t){t||(r=n=0);var u=2,f=e.length,s=new Array(f),l=Math.round((e[0]-i)/o),h=Math.round((e[1]-c)/a);for(s[0]=l-r,r=l,s[1]=h-n,n=h;u<f;)s[u]=e[u],++u;return s}}e.bbox=n,e.feature=function(e,t){return"string"==typeof t&&(t=e.objects[t]),"GeometryCollection"===t.type?{type:"FeatureCollection",features:t.geometries.map(function(t){return o(e,t)})}:o(e,t)},e.merge=function(e){return a(e,u.apply(this,arguments))},e.mergeArcs=u,e.mesh=function(e){return a(e,c.apply(this,arguments))},e.meshArcs=c,e.neighbors=function(e){var t={},r=e.map(function(){return[]});function n(e,r){e.forEach(function(e){e<0&&(e=~e);var n=t[e];n?n.push(r):t[e]=[r]})}function o(e,t){e.forEach(function(e){n(e,t)})}var a={LineString:n,MultiLineString:o,Polygon:o,MultiPolygon:function(e,t){e.forEach(function(e){o(e,t)})}};for(var i in e.forEach(function e(t,r){"GeometryCollection"===t.type?t.geometries.forEach(function(t){e(t,r)}):t.type in a&&a[t.type](t.arcs,r)}),t)for(var c=t[i],u=c.length,s=0;s<u;++s)for(var l=s+1;l<u;++l){var h,p=c[s],g=c[l];(h=r[p])[i=f(h,g)]!==g&&h.splice(i,0,g),(h=r[g])[i=f(h,p)]!==p&&h.splice(i,0,p)}return r},e.quantize=function(e,t){if(e.transform)throw new Error("already quantized");if(t&&t.scale)u=e.bbox;else{if(!((r=Math.floor(t))>=2))throw new Error("n must be ≥2");var r,o=(u=e.bbox||n(e))[0],a=u[1],i=u[2],c=u[3];t={scale:[i-o?(i-o)/(r-1):1,c-a?(c-a)/(r-1):1],translate:[o,a]}}var u,f,l=s(t),h=e.objects,p={};function g(e){return l(e)}function y(e){var t;switch(e.type){case"GeometryCollection":t={type:"GeometryCollection",geometries:e.geometries.map(y)};break;case"Point":t={type:"Point",coordinates:g(e.coordinates)};break;case"MultiPoint":t={type:"MultiPoint",coordinates:e.coordinates.map(g)};break;default:return e}return null!=e.id&&(t.id=e.id),null!=e.bbox&&(t.bbox=e.bbox),null!=e.properties&&(t.properties=e.properties),t}for(f in h)p[f]=y(h[f]);return{type:"Topology",bbox:u,transform:t,objects:p,arcs:e.arcs.map(function(e){var t,r=0,n=1,o=e.length,a=new Array(o);for(a[0]=l(e[0],0);++r<o;)((t=l(e[r],r))[0]||t[1])&&(a[n++]=t);return 1===n&&(a[n++]=[0,0]),a.length=n,a})}},e.transform=r,e.untransform=s,Object.defineProperty(e,"__esModule",{value:!0})});
+</script>
+<script>
+"use strict";
+/* ---------- helpers ---------- */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const safeUrl = (u) => { u = String(u || "").trim(); if (/^https?:\/\/\S+$/i.test(u)) return u; if (/^10\.\d{4,}\/\S+$/.test(u)) return "https://doi.org/" + u; return ""; };
+const GAS = { CH4: "CH₄", CO2: "CO₂", N2O: "N₂O", "13C-CH4": "δ¹³C‑CH₄" };
+const gasLabel = (g) => GAS[g] || g;
+const ECO_VAR = { River: "--river", Lake: "--lake", Land: "--land", Geology: "--geo" };
+const ecoColor = (e) => `var(${ECO_VAR[e] || "--faint"})`;
+const ECO_LABEL = { Geology: "Geological seep" };
+const SYS_ORDER = ["Eddy-covariance flux tower", "Atmospheric in-situ station", "Flask sampling", "Total-column FTIR", "Flux chamber", "Aircraft", "Mobile flux tower", "Boat sampling (rivers & lakes)", "Not specified"];
+const SYS_COL = { "Eddy-covariance flux tower": "#0f766e", "Atmospheric in-situ station": "#4f46e5", "Flask sampling": "#be185d", "Total-column FTIR": "#b45309", "Flux chamber": "#65a30d", "Aircraft": "#0284c7", "Mobile flux tower": "#7c2d12", "Boat sampling (rivers & lakes)": "#64748b", "Not specified": "#a8a29e" };
+const SYS_ALIAS = { "ship/canoe": "Boat sampling (rivers & lakes)", tower: "Eddy-covariance flux tower", chamber: "Flux chamber", ftir: "Total-column FTIR", flask: "Flask sampling", "air sample": "Flask sampling", aircraft: "Aircraft", other: "Not specified", "satellite validation": "Total-column FTIR" };
+function platOf(r) { const s = r.sys; if (["Eddy-covariance flux tower", "Atmospheric in-situ station", "Flask sampling", "Total-column FTIR"].includes(s)) return "Fixed station"; if (s === "Aircraft" || s === "Mobile flux tower") return "Mobile platform"; if (s === "Flux chamber") return r.op === "Ended" && r.ys && r.ys === r.ye ? "Field campaign" : "Fixed station"; return "Field campaign"; }
+let colorBy = "eco"; try { if (localStorage.getItem("colorBy") === "sys") colorBy = "sys"; } catch {}
+const siteColor = (r) => colorBy === "sys" ? (SYS_COL[r.sys] || "#a8a29e") : ecoColor(r.eco);
+const ST_RANK = { Operational: 0, Future: 1, Ended: 2 };
+const opLabel = (r) => r.op === "Future" && r.stg ? `Future · ${r.stg.toLowerCase()}` : (r.op || "—");
+const fmtLat = (v) => `${Math.abs(v).toFixed(4)}° ${v < 0 ? "S" : "N"}`;
+const fmtLon = (v) => `${Math.abs(v).toFixed(4)}° ${v < 0 ? "W" : "E"}`;
+const period = (r) => r.ys == null ? "No dates" : (r.ye && r.ye !== r.ys ? `${r.ys}–${r.ye}` : String(r.ys));
+const nowIso = () => new Date().toISOString();
+function toast(msg) { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => (t.hidden = true), 3200); }
+function lsGet(k) { try { return localStorage.getItem(k); } catch { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); } catch {} }
+
+/* ---------- state ---------- */
+const S = {
+  base: [], comm: [], all: [], filtered: [], countries: [], log: [],
+  f: { q: "", sel: {}, y0: null, y1: null, undated: true, inView: false },
+  yMin: 1983, yMax: 2030, sort: { key: "name", dir: 1 }, page: 0, sel: null,
+  db: null, user: null, downloads: null, me: null, meObj: null, isAdmin: false, canWrite: null,
+  config: null, reviews: {}, contributors: {}, subs: {}, editing: null, passOk: false, bulk: null,
+};
+const FACETS = [
+  { key: "gas", label: "Gas species", get: (r) => r.gas, fmt: gasLabel, order: ["CH4", "CO2", "N2O", "13C-CH4"] },
+  { key: "eco", label: "Ecosystem", get: (r) => [r.eco], swatch: true, fmt: (v) => ECO_LABEL[v] || v, order: ["River", "Lake", "Land", "Geology"] },
+  { key: "biome", label: "Biome (RESOLVE 2017)", get: (r) => [r.biome || "Outside mapped land"], swatch: (v) => BIOME_COLOR[v] || (v.startsWith("Open water") ? "var(--lake)" : "var(--line)") },
+  { key: "op", label: "Status", get: (r) => [r.op], order: ["Operational", "Future", "Ended"] },
+  { key: "stg", label: "Development stage (future sites)", get: (r) => (r.op === "Future" ? [r.stg || "Not stated"] : []), order: ["Installed, not yet operational", "Funded / planned", "Candidate", "Not stated"] },
+  { key: "plat", label: "Infrastructure type", get: (r) => [r.plat], order: ["Fixed station", "Mobile platform", "Field campaign"] },
+  { key: "sys", label: "Observing system", get: (r) => [r.sys], order: SYS_ORDER, swatch: (v) => SYS_COL[v] },
+  { key: "par", label: "Measured parameter", get: (r) => (r.par.length ? r.par : ["Not specified"]) },
+  { key: "cty", label: "Country", get: (r) => r.cty, search: true, scroll: true },
+  { key: "net", label: "Network", get: (r) => [r.net || "None listed"], search: true, scroll: true },
+  { key: "avail", label: "Data availability", get: (r) => [...(r.data ? ["Data link"] : []), ...(r.pub ? ["Publication"] : []), ...(r.oa === "Yes" ? ["Open access"] : [])], all: true, order: ["Data link", "Publication", "Open access"] },
+  { key: "src", label: "Data source", get: (r) => (r._comm ? [r._src] : r.srcs || [r._src]), scroll: true, order: ["Africa Methane database (spreadsheet)", "Curated shapefiles (Mar 2026)", "SPARK site list (project workbook)", "NOAA ObsPack GLOBALVIEWplus v7", "NOAA ObsPack methane isotopes", "SPARK shapefiles (EC_flux_tower_DRC)", "SPARK shapefiles (Mobile_EC_flux_tower)", "Community · verified", "Community · pending"] },
+];
+const facetSearch = {};
+function defaultSel() { const o = {}; FACETS.forEach((f) => (o[f.key] = new Set(f.def || []))); return o; }
+S.f.sel = defaultSel();
+
+/* ---------- data prep ---------- */
+function prep(r) {
+  if (r.en !== undefined && r.ecoN === undefined) { r.ecoN = r.en; r.biome = r.bi; }
+  if (S.eco && r.ecoN === undefined) { const e = ecoAt(r.lat, r.lon); r.ecoN = e ? e.n : ""; r.biome = e ? BIOME_SHORT[e.b] || e.bn : (r.eco === "Lake" ? "Open water (large lake)" : "Outside mapped land"); }
+  r._text = [r.ecoN, r.biome, r.name, r.prog, r.net, r.cn, r.org, r.notes, r.inst, r.id, r.k, r.cty.join(" "), r.sys, r.eco].join(" ").toLowerCase();
+  r._loc = r.lat.toFixed(4) + "," + r.lon.toFixed(4);
+  if (!r._src) r._src = r.src || "Africa Methane database";
+  if (SYS_ALIAS[(r.sys || "").toLowerCase()]) r.sys = SYS_ALIAS[r.sys.toLowerCase()];
+  if (r.op === "Planned") { r.op = "Future"; r.stg = r.stg || "Funded / planned"; } else if (r.op === "Potential") { r.op = "Future"; r.stg = r.stg || "Candidate"; }
+  if (!r.plat) r.plat = platOf(r);
+  return r;
+}
+function reviewStatus(rec) {
+  const d = S.reviews[rec.k];
+  if (d && d.v === rec.updatedAt) return d.s === "verified" ? "verified" : "rejected";
+  return "pending";
+}
+function mergeCommunity() {
+  const out = [];
+  for (const [uid, recs] of Object.entries(S.subs)) {
+    for (const raw of recs || []) {
+      if (!raw || typeof raw.lat !== "number" || typeof raw.lon !== "number") continue;
+      const st = reviewStatus(raw);
+      const r = Object.assign({}, raw, { cty: Array.isArray(raw.cty) ? raw.cty : [String(raw.cty || "")], gas: raw.gas || [], par: raw.par || [], by: uid, status: st });
+      r._src = st === "verified" ? "Community · verified" : st === "pending" ? "Community · pending" : "Community · returned";
+      r._comm = true;
+      if (st !== "rejected") out.push(prep(r));
+    }
+  }
+  S.comm = out;
+  S.all = S.base.concat(out);
+  const ys = S.all.flatMap((r) => (r.ys != null ? [r.ys, r.ye ?? r.ys] : []));
+  const lo = Math.min(1983, ...ys), hi = Math.max(2030, ...ys);
+  const wasFull = S.f.y0 == null || (S.f.y0 === S.yMin && S.f.y1 === S.yMax);
+  S.yMin = lo; S.yMax = hi;
+  if (wasFull) { S.f.y0 = lo; S.f.y1 = hi; }
+  setupYearInputs();
+  fillDatalists();
+  apply();
+}
+
+/* ---------- filtering ---------- */
+let mapBounds = null;
+function pass(r, except) {
+  const f = S.f;
+  if (f.q && except !== "q") { for (const t of f.q) if (!r._text.includes(t)) return false; }
+  for (const fc of FACETS) {
+    if (fc.key === except) continue;
+    const sel = f.sel[fc.key];
+    if (!sel.size) continue;
+    const vals = fc.get(r);
+    if (fc.all) { for (const v of sel) if (!vals.includes(v)) return false; }
+    else if (!vals.some((v) => sel.has(v))) return false;
+  }
+  if (except !== "year") {
+    if (r.ys == null) { if (!f.undated) return false; }
+    else if (!(f.y0 === S.yMin && f.y1 === S.yMax)) { const e = r.ye ?? r.ys; if (e < f.y0 || r.ys > f.y1) return false; }
+  }
+  if (f.inView && mapBounds && !mapBounds.contains([r.lat, r.lon])) return false;
+  return true;
+}
+function apply() {
+  S.filtered = S.all.filter((r) => pass(r, null));
+  S.page = Math.min(S.page, Math.max(0, Math.ceil(S.filtered.length / PAGE) - 1));
+  renderStats(); renderFacets(); renderYear(); renderMap(); renderTable();
+  if (S.sel) renderDetail(S.sel);
+}
+
+/* ---------- facets ---------- */
+function renderFacets() {
+  const host = $("#facets");
+  const html = FACETS.map((fc) => {
+    const counts = new Map();
+    for (const r of S.all) if (pass(r, fc.key)) for (const v of new Set(fc.get(r))) counts.set(v, (counts.get(v) || 0) + 1);
+    const every = new Set();
+    for (const r of S.all) for (const v of fc.get(r)) every.add(v);
+    let vals = [...every];
+    if (fc.order) vals.sort((a, b) => (fc.order.indexOf(a) + 1 || 99) - (fc.order.indexOf(b) + 1 || 99) || a.localeCompare(b));
+    else vals.sort((a, b) => (counts.get(b) || 0) - (counts.get(a) || 0) || a.localeCompare(b));
+    const term = (facetSearch[fc.key] || "").toLowerCase();
+    const sel = S.f.sel[fc.key];
+    if (term) vals = vals.filter((v) => v.toLowerCase().includes(term) || sel.has(v));
+    const opts = vals.map((v) => {
+      const n = counts.get(v) || 0;
+      const lab = fc.fmt ? fc.fmt(v) : v;
+      return `<label class="opt${n || sel.has(v) ? "" : " zero"}"><input type="checkbox" data-f="${fc.key}" value="${esc(v)}"${sel.has(v) ? " checked" : ""}>${fc.swatch ? `<span class="sw" style="background:${typeof fc.swatch === "function" ? fc.swatch(v) : ecoColor(v)}"></span>` : ""}<span class="lab" title="${esc(lab)}">${esc(lab)}</span><span class="n">${n}</span></label>`;
+    }).join("");
+    const clear = sel.size && !fc.def ? `<button class="linkbtn" data-clear="${fc.key}">Clear</button>` : "";
+    return `<div class="facet"><h3>${fc.label}${clear}</h3>${fc.search ? `<input class="mini" data-fs="${fc.key}" placeholder="Find ${fc.label.toLowerCase()}…" value="${esc(facetSearch[fc.key] || "")}" aria-label="Find ${fc.label.toLowerCase()}">` : ""}<div class="opts${fc.scroll ? " scroll" : ""}">${opts || '<span class="muted" style="font-size:12px">No match</span>'}</div></div>`;
+  }).join("");
+  const active = document.activeElement;
+  const focusKey = active && active.dataset ? active.dataset.fs : null;
+  const focusBox = active && active.dataset && active.dataset.f ? [active.dataset.f, active.value] : null;
+  const scrolls = $$(".opts.scroll", host).map((e) => e.scrollTop);
+  host.innerHTML = html;
+  $$(".opts.scroll", host).forEach((e, i) => (e.scrollTop = scrolls[i] || 0));
+  if (focusBox) { const el = $$(`input[data-f="${focusBox[0]}"]`, host).find((i) => i.value === focusBox[1]); if (el) el.focus(); }
+  if (focusKey) { const el = host.querySelector(`[data-fs="${focusKey}"]`); if (el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); } }
+}
+$("#facets").addEventListener("change", (e) => {
+  const t = e.target; if (!t.dataset.f) return;
+  const s = S.f.sel[t.dataset.f]; t.checked ? s.add(t.value) : s.delete(t.value);
+  S.page = 0; apply();
+});
+$("#facets").addEventListener("click", (e) => { const k = e.target.dataset.clear; if (k) { S.f.sel[k].clear(); S.page = 0; apply(); } });
+$("#facets").addEventListener("input", (e) => { const k = e.target.dataset.fs; if (k) { facetSearch[k] = e.target.value; renderFacets(); } });
+let qT;
+$("#q").addEventListener("input", (e) => { clearTimeout(qT); qT = setTimeout(() => { S.f.q = e.target.value.toLowerCase().split(/\s+/).filter(Boolean); S.page = 0; apply(); }, 120); });
+$("#undated").addEventListener("change", (e) => { S.f.undated = e.target.checked; apply(); });
+$("#inView").addEventListener("change", (e) => { S.f.inView = e.target.checked; mapBounds = map.getBounds(); S.page = 0; apply(); });
+$("#reset").addEventListener("click", () => {
+  S.f = { q: "", sel: defaultSel(), y0: S.yMin, y1: S.yMax, undated: true, inView: false };
+  $("#q").value = ""; $("#undated").checked = true; $("#inView").checked = false;
+  Object.keys(facetSearch).forEach((k) => delete facetSearch[k]);
+  setupYearInputs(); S.page = 0; apply();
+});
+
+/* ---------- years ---------- */
+function setupYearInputs() {
+  for (const id of ["y0", "y1"]) { const el = $("#" + id); el.min = S.yMin; el.max = S.yMax; el.step = 1; }
+  $("#y0").value = S.f.y0; $("#y1").value = S.f.y1;
+}
+function onYear(which) {
+  let a = +$("#y0").value, b = +$("#y1").value;
+  if (a > b) { if (which === 0) b = a; else a = b; $("#y0").value = a; $("#y1").value = b; }
+  S.f.y0 = a; S.f.y1 = b; S.page = 0; apply();
+}
+$("#y0").addEventListener("input", () => onYear(0));
+$("#y1").addEventListener("input", () => onYear(1));
+$("#yearReset").addEventListener("click", () => { S.f.y0 = S.yMin; S.f.y1 = S.yMax; setupYearInputs(); apply(); });
+function renderYear() {
+  const n = S.yMax - S.yMin + 1, counts = new Array(n).fill(0);
+  let undated = 0;
+  for (const r of S.all) {
+    if (!pass(r, "year")) continue;
+    if (r.ys == null) { undated++; continue; }
+    for (let y = r.ys; y <= (r.ye ?? r.ys); y++) counts[y - S.yMin]++;
+  }
+  const max = Math.max(1, ...counts), w = 280 / n;
+  $("#hist").innerHTML = counts.map((c, i) => { const h = c ? Math.max(2, (c / max) * 54) : 0; const y = S.yMin + i; return `<rect x="${(i * w + 0.5).toFixed(2)}" y="${(56 - h).toFixed(2)}" width="${Math.max(1, w - 1).toFixed(2)}" height="${h.toFixed(2)}" class="${y >= S.f.y0 && y <= S.f.y1 ? "in" : ""}"><title>${y}: ${c} records active</title></rect>`; }).join("");
+  $("#y0l").textContent = S.f.y0; $("#y1l").textContent = S.f.y1;
+  $("#undatedN").textContent = `(${undated})`;
+  $("#yearReset").hidden = S.f.y0 === S.yMin && S.f.y1 === S.yMax;
+}
+
+/* ---------- stats + chips ---------- */
+function renderStats() {
+  const F = S.filtered;
+  const locs = new Set(F.map((r) => r._loc)).size;
+  const ctys = new Set(F.flatMap((r) => r.cty)).size;
+  const live = F.filter((r) => r.op === "Operational").length, fut = F.filter((r) => r.op === "Future").length, ended = F.filter((r) => r.op === "Ended").length;
+  const chips = [];
+  if (S.f.q.length) chips.push({ l: `“${S.f.q.join(" ")}”`, fn: () => { S.f.q = ""; $("#q").value = ""; } });
+  for (const fc of FACETS) {
+    if (fc.def) continue;
+    for (const v of S.f.sel[fc.key]) chips.push({ l: fc.fmt ? fc.fmt(v) : v, fn: () => S.f.sel[fc.key].delete(v) });
+  }
+  if (!(S.f.y0 === S.yMin && S.f.y1 === S.yMax)) chips.push({ l: `${S.f.y0}–${S.f.y1}`, fn: () => { S.f.y0 = S.yMin; S.f.y1 = S.yMax; setupYearInputs(); } });
+  if (typeof fpSel !== "undefined" && fpSel.size) chips.push({ l: "Footprints: " + (fpSel.size === 4 ? "all months" : [...fpSel].map((m) => m.slice(0, 3)).join(", ")), fn: () => { fpSel = new Set(); renderFp(); } });
+  if (S.f.inView) chips.push({ l: "Map view", fn: () => { S.f.inView = false; $("#inView").checked = false; } });
+  chipFns = chips.map((c) => c.fn);
+  $("#stats").innerHTML =
+    `<div class="stat"><b>${F.length.toLocaleString()}</b><span>records</span></div>` +
+    `<div class="stat"><b>${locs.toLocaleString()}</b><span>locations</span></div>` +
+    `<div class="stat"><b>${ctys}</b><span>countries</span></div>` +
+    `<div class="stat"><b>${live}</b><span>operational</span></div>` +
+    `<div class="stat"><b>${fut}</b><span>future</span></div>` +
+    `<div class="stat"><b>${ended}</b><span>ended</span></div>` +
+    `<div class="grow"></div><div class="chips">${chips.map((c, i) => `<span class="chip">${esc(c.l)}<button aria-label="Remove filter ${esc(c.l)}" data-chip="${i}">×</button></span>`).join("")}</div>`;
+  const openBtn = $("#openSide"); openBtn.textContent = chips.length ? `Filters (${chips.length})` : "Filters";
+}
+let chipFns = [];
+$("#stats").addEventListener("click", (e) => { const i = e.target.dataset.chip; if (i != null) { chipFns[+i](); S.page = 0; apply(); } });
+
+/* ---------- map ---------- */
+const AFRICA = [[-36, -20], [38, 55]];
+const map = L.map("map", { zoomControl: true, minZoom: 2, maxZoom: 11, worldCopyJump: false, attributionControl: false, preferCanvas: false }).fitBounds(AFRICA);
+L.control.scale({ imperial: false, position: "bottomright" }).addTo(map);
+map.createPane("base").style.zIndex = 200;
+map.createPane("ecoPane").style.zIndex = 300;
+map.createPane("borders").style.zIndex = 350;
+map.createPane("fpPane").style.zIndex = 380;
+map.createPane("terrPane").style.zIndex = 250; map.getPane("terrPane").style.pointerEvents = "none";
+map.createPane("handPane").style.zIndex = 260; map.getPane("handPane").style.pointerEvents = "none";
+map.createPane("waterPane").style.zIndex = 360; map.getPane("waterPane").style.pointerEvents = "none";
+map.createPane("emPane").style.zIndex = 330; map.getPane("emPane").style.pointerEvents = "none";
+const emRenderer = L.canvas({ padding: 0.3, pane: "emPane" });
+map.getPane("ecoPane").style.pointerEvents = "none"; map.getPane("borders").style.pointerEvents = "none";
+const baseRenderer = L.canvas({ padding: 0.3, pane: "base" });
+const ecoRenderer = L.canvas({ padding: 0.3, pane: "ecoPane" });
+const borderRenderer = L.canvas({ padding: 0.3, pane: "borders" });
+/* ---------- RESOLVE ecoregions background ---------- */
+const BIOME_SHORT = { 1: "Moist broadleaf forest", 2: "Dry broadleaf forest", 5: "Temperate conifer forest", 7: "Savanna & grassland", 9: "Flooded grassland & savanna", 10: "Montane grassland & shrubland", 12: "Mediterranean woodland & scrub", 13: "Desert & xeric shrubland", 14: "Mangroves" };
+const BIOME_COLOR = {};
+let bgOn = true, bgDetail = false, bgMode = "biome", bgOpacity = 0.45, ecoLayer = null, borderLayer = null;
+try { const v = localStorage.getItem("bioOn"); if (v !== null) bgOn = v === "1"; bgDetail = localStorage.getItem("ecoDetail") === "1"; const o = +localStorage.getItem("bgOp"); if (o >= 10 && o <= 90) bgOpacity = o / 100; } catch {}
+bgMode = bgOn ? (bgDetail ? "eco" : "biome") : "none";
+function prepEco(fc) {
+  fc.features = fc.features.filter((f) => f.geometry);
+  for (const f of fc.features) if (f.geometry.type === "Polygon") f.geometry = { type: "MultiPolygon", coordinates: [f.geometry.coordinates] };
+  for (const f of fc.features) {
+    const p = f.properties; let a = [180, 90, -180, -90];
+    for (const poly of f.geometry.coordinates) for (const [x, y] of poly[0]) { if (x < a[0]) a[0] = x; if (y < a[1]) a[1] = y; if (x > a[2]) a[2] = x; if (y > a[3]) a[3] = y; }
+    f._bb = a; BIOME_COLOR[BIOME_SHORT[p.b] || p.bn] = p.pb;
+  }
+  return fc;
+}
+function inRing(x, y, r) { let c = false; for (let i = 0, j = r.length - 1; i < r.length; j = i++) { const [xi, yi] = r[i], [xj, yj] = r[j]; if ((yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) c = !c; } return c; }
+function ecoAt(lat, lon) {
+  if (!S.eco) return null;
+  for (const f of S.eco.features) {
+    const b = f._bb; if (lon < b[0] || lon > b[2] || lat < b[1] || lat > b[3]) continue;
+    for (const poly of f.geometry.coordinates) { if (inRing(lon, lat, poly[0]) && !poly.slice(1).some((h) => inRing(lon, lat, h))) return f.properties; }
+  }
+  return null;
+}
+function ecoStyle(f) {
+  const dark = getComputedStyle(document.documentElement).colorScheme === "dark";
+  const p = f.properties, op = bgOpacity * (dark ? 0.75 : 1);
+  return bgMode === "eco" ? { fillColor: p.mc, fillOpacity: op, color: "#ffffff", opacity: 0.5, weight: 0.5, stroke: true } : { fillColor: p.pb, fillOpacity: op, stroke: false };
+}
+/* total CH4 emission grid (1°, g CH4 m-2 month-1), decoded from the project footprint figure */
+const CH4_RAMP = [[0, "#ffffcc"], [0.25, "#ffeda0"], [0.5, "#fed976"], [0.75, "#feb24c"], [1, "#fd8d3c"], [1.25, "#fc4e2a"], [1.5, "#e31a1c"], [1.75, "#bd0026"], [2, "#800026"]];
+function ch4Color(v) {
+  v = Math.max(0, Math.min(2, v));
+  for (let i = 1; i < CH4_RAMP.length; i++) {
+    const [a, ca] = CH4_RAMP[i - 1], [b, cb] = CH4_RAMP[i];
+    if (v <= b) { const t = (v - a) / (b - a), p = (h, k) => parseInt(h.slice(k, k + 2), 16); const mix = (k) => Math.round(p(ca, k) + (p(cb, k) - p(ca, k)) * t); return `rgb(${mix(1)},${mix(3)},${mix(5)})`; }
+  }
+  return CH4_RAMP[CH4_RAMP.length - 1][1];
+}
+let emLayer = null; const emIndex = new Map();
+function buildEm() {
+  if (!S.em || emLayer) return;
+  for (const [x, y, v] of S.em.cells) emIndex.set(x + "," + y, v);
+  for (const [x, y] of S.em.grey) emIndex.set(x + "," + y, -1);
+  emLayer = L.imageOverlay("emissions.webp", [[-36, -26], [38, 58]], { pane: "emPane", interactive: false, className: "emimg" });
+}
+function emAt(lat, lon) { const v = emIndex.get(Math.floor(lon) + "," + Math.floor(lat)); return v === undefined ? null : v; }
+let emOn = true, emOpacity = 0.7;
+try { const v = localStorage.getItem("emOn"); if (v !== null) emOn = v === "1"; const o = +localStorage.getItem("emOp"); if (o >= 15 && o <= 100) emOpacity = o / 100; } catch {}
+function renderEm() {
+  if (!S.em) return;
+  buildEm();
+  const dark = getComputedStyle(document.documentElement).colorScheme === "dark";
+  if (emOn) { emLayer.setOpacity(emOpacity * (dark ? 0.85 : 1)); if (!map.hasLayer(emLayer)) emLayer.addTo(map); }
+  else if (map.hasLayer(emLayer)) map.removeLayer(emLayer);
+  $("#emOn").checked = emOn; $("#emOp").value = Math.round(emOpacity * 100); $("#emOp").disabled = !emOn;
+  $("#emLegend").innerHTML = emOn ? `<div class="lh">Total CH₄ emissions</div><div style="height:10px;width:170px;border-radius:2px;border:1px solid rgba(0,0,0,.15);background:linear-gradient(90deg,${CH4_RAMP.map(([v, c]) => c + " " + (v / 2) * 100 + "%").join(",")})"></div><div class="mono muted" style="display:flex;justify-content:space-between;width:170px;font-size:10.5px"><span>0</span><span>0.5</span><span>1</span><span>1.5</span><span>≥2</span></div><div class="muted" style="font-size:11px">g CH₄ m⁻² month⁻¹</div><div style="display:flex;align-items:center;gap:6px"><span class="sq" style="background:#b8b4ad;opacity:.6"></span>Very low or masked</div>` : "";
+  try { localStorage.setItem("emOn", emOn ? "1" : "0"); localStorage.setItem("emOp", String(Math.round(emOpacity * 100))); } catch {}
+}
+$("#emOn").addEventListener("change", (e) => { emOn = e.target.checked; renderEm(); });
+$("#emOp").addEventListener("input", (e) => { emOpacity = +e.target.value / 100; renderEm(); });
+function renderBg() {
+  if (!S.eco) return;
+  if (!ecoLayer) ecoLayer = L.geoJSON(S.eco, { renderer: ecoRenderer, interactive: false, style: ecoStyle });
+  if (!borderLayer && S.basemap) { const cs = getComputedStyle(document.documentElement); borderLayer = L.geoJSON(S.basemap, { renderer: borderRenderer, interactive: false, style: { color: cs.getPropertyValue("--border").trim(), weight: 0.6, fill: false } }); }
+  if (bgMode === "none") { map.removeLayer(ecoLayer); if (borderLayer) map.removeLayer(borderLayer); }
+  else { ecoLayer.setStyle(ecoStyle); if (!map.hasLayer(ecoLayer)) ecoLayer.addTo(map); if (borderLayer && !map.hasLayer(borderLayer)) borderLayer.addTo(map); }
+  $("#bioOn").checked = bgOn; $("#ecoDetail").checked = bgDetail; $("#ecoDetail").disabled = !bgOn; $("#bgOp").disabled = !bgOn;
+  $("#bgOp").value = Math.round(bgOpacity * 100);
+  if (!$("#bioRamp").style.background) { const cs = [...new Set(S.eco.features.sort((a, b) => a.properties.b - b.properties.b).map((f) => f.properties.pb))]; $("#bioRamp").style.background = `linear-gradient(90deg,${cs.map((c, i) => `${c} ${(i / cs.length) * 100}% ${((i + 1) / cs.length) * 100}%`).join(",")})`; }
+  try { localStorage.setItem("bioOn", bgOn ? "1" : "0"); localStorage.setItem("ecoDetail", bgDetail ? "1" : "0"); localStorage.setItem("bgOp", String(Math.round(bgOpacity * 100))); } catch {}
+  const L2 = $("#bgLegend");
+  if (bgMode === "biome") {
+    const used = [...new Set(S.eco.features.map((f) => f.properties.b))].sort((a, b) => a - b);
+    const items = used.map((b) => { const f = S.eco.features.find((x) => x.properties.b === b); return `<div><span class="sq" style="background:${esc(f.properties.pb)}"></span>${esc(BIOME_SHORT[b] || f.properties.bn)}</div>`; }).join("");
+    L2.innerHTML = `<div class="lh">Biomes (RESOLVE 2017)</div>${items}`;
+  } else if (bgMode === "eco") L2.innerHTML = `<div class="lh">Ecoregions</div><div class="muted" style="max-width:170px">Point at the map to see the ecoregion name.</div>`;
+  else L2.innerHTML = "";
+}
+/* ---------- terrain & hydrology layers ---------- */
+const TERR_BOUNDS = [[-36, -26], [38, 58]];
+const TL = { elev: { on: false, op: 0.8, layer: null, file: "elevation.webp", pane: "terrPane" }, hand: { on: false, op: 0.8, layer: null, file: "hand.webp", pane: "handPane" }, water: { on: false, layer: null } };
+try { const t = JSON.parse(localStorage.getItem("terr") || "{}"); for (const k of ["elev", "hand", "water"]) if (t[k]) { TL[k].on = !!t[k].on; if (t[k].op) TL[k].op = t[k].op; } } catch {}
+let terrData = null;
+async function loadTerrData() {
+  if (terrData) return;
+  terrData = "loading";
+  try {
+    const img = new Image(); img.src = "terrain_data.webp"; await img.decode();
+    const c = document.createElement("canvas"); c.width = img.width; c.height = img.height;
+    const cx = c.getContext("2d", { willReadFrequently: true }); cx.drawImage(img, 0, 0);
+    terrData = { w: img.width, h: img.height, d: cx.getImageData(0, 0, img.width, img.height).data };
+  } catch { terrData = null; }
+}
+function terrAt(lat, lon) {
+  if (!terrData || terrData === "loading") return null;
+  const r = Math.floor((38 - lat) / 0.1), c = Math.floor((lon + 26) / 0.1);
+  if (r < 0 || c < 0 || r >= terrData.h || c >= terrData.w) return null;
+  const p = (r * terrData.w + c) * 4, d = terrData.d;
+  if (d[p + 2] === 255) return null;
+  return { elev: d[p] * 256 + d[p + 1] - 500, hand: d[p + 2] };
+}
+let waterData = null;
+async function buildWater() {
+  if (TL.water.layer) return;
+  if (!waterData) { try { const t = await fetch("water.topo.json").then((r) => r.json()); waterData = { type: "FeatureCollection", features: Object.keys(t.objects).flatMap((k) => topojson.feature(t, t.objects[k]).features) }; } catch { return; } }
+  const r = L.canvas({ padding: 0.3, pane: "waterPane" });
+  TL.water.layer = L.geoJSON(waterData, {
+    renderer: r, interactive: false,
+    style: (f) => { const p = f.properties; if (p.k === "lake") return { color: "#2f7fbf", weight: 0.6, fillColor: "#4a9bd6", fillOpacity: 0.9 }; if (p.k === "river") return { color: "#1f6fb2", weight: p.sr <= 3 ? 2.2 : p.sr <= 6 ? 1.6 : 1.1, opacity: 0.95, fill: false }; return { color: "#8dbbe6", weight: [0, 0.6, 0.9, 1.3, 1.7][p.c] || 0.6, opacity: 0.9, fill: false }; },
+  });
+}
+async function renderTerr() {
+  for (const k of ["elev", "hand"]) {
+    const t = TL[k];
+    if (t.on && !t.layer) t.layer = L.imageOverlay(t.file, TERR_BOUNDS, { pane: t.pane, opacity: t.op, interactive: false, className: "terrimg" });
+    if (t.layer) { t.layer.setOpacity(t.op); if (t.on && !map.hasLayer(t.layer)) t.layer.addTo(map); if (!t.on && map.hasLayer(t.layer)) map.removeLayer(t.layer); }
+  }
+  if (TL.elev.on || TL.hand.on) loadTerrData();
+  if (TL.water.on) await buildWater();
+  if (TL.water.layer) { if (TL.water.on && !map.hasLayer(TL.water.layer)) TL.water.layer.addTo(map); if (!TL.water.on && map.hasLayer(TL.water.layer)) map.removeLayer(TL.water.layer); }
+  $("#lyElev").checked = TL.elev.on; $("#lyHand").checked = TL.hand.on; $("#lyWater").checked = TL.water.on;
+  $("#opElev").value = Math.round(TL.elev.op * 100); $("#opHand").value = Math.round(TL.hand.op * 100);
+  $("#opElev").hidden = !TL.elev.on; $("#opHand").hidden = !TL.hand.on;
+  let h = "";
+  if (TL.elev.on) h += `<div class="lh" style="display:block">Elevation</div><div style="display:block"><div class="lgbar" style="background:linear-gradient(90deg,#f6f3ee 0.0%,#e6ddcf 7.8%,#d2c4ae 17.6%,#b3a289 31.4%,#8f806b 49.0%,#6f6354 70.6%,#c9c5bf 88.2%,#f4f4f2 100.0%)"></div><div class="lgticks mono muted"><span>0</span><span>1000</span><span>2000</span><span>3500</span><span>5000 m</span></div></div>`;
+  if (TL.hand.on) h += `<div class="lh" style="display:block">Height above nearest drainage</div><div style="display:block"><div class="lgbar" style="background:linear-gradient(90deg,#0d4f4f 0.0%,#16655f 2.0%,#2c8278 5.3%,#55a497 10.0%,#91c8bc 20.0%,#c9e5de 40.0%,#eef7f4 100.0%)"></div><div class="lgticks mono muted"><span>0</span><span>8</span><span>30</span><span>60</span><span>≥150 m</span></div><div class="muted" style="font-size:11px">Low = wet, flood-prone ground</div></div>`;
+  if (TL.water.on) h += `<div class="lh" style="display:block">Water bodies</div><div><span class="sq" style="background:#4a9bd6"></span>Lake or reservoir</div><div><span style="width:14px;height:0;border-top:2px solid #1f6fb2"></span>Major river</div><div><span style="width:14px;height:0;border-top:1px solid #8dbbe6"></span>Stream (from terrain)</div>`;
+  $("#terrLegend").innerHTML = h;
+  try { localStorage.setItem("terr", JSON.stringify({ elev: { on: TL.elev.on, op: TL.elev.op }, hand: { on: TL.hand.on, op: TL.hand.op }, water: { on: TL.water.on } })); } catch {}
+}
+$("#lyElev").addEventListener("change", (e) => { TL.elev.on = e.target.checked; renderTerr(); });
+$("#lyHand").addEventListener("change", (e) => { TL.hand.on = e.target.checked; renderTerr(); });
+$("#lyWater").addEventListener("change", (e) => { TL.water.on = e.target.checked; renderTerr(); });
+$("#opElev").addEventListener("input", (e) => { TL.elev.op = +e.target.value / 100; renderTerr(); });
+$("#opHand").addEventListener("input", (e) => { TL.hand.op = +e.target.value / 100; renderTerr(); });
+/* ---------- site colouring and tracks ---------- */
+function renderSiteLegend() {
+  const items = colorBy === "sys"
+    ? SYS_ORDER.filter((s) => s !== "Not specified" || S.all.some((r) => r.sys === s)).map((s) => `<div style="display:flex;align-items:center;gap:6px"><span class="sw" style="background:${SYS_COL[s]}"></span>${esc(s)}</div>`)
+    : [["River", "--river"], ["Lake", "--lake"], ["Land", "--land"], ["Geological seep", "--geo"]].map(([l, v]) => `<div style="display:flex;align-items:center;gap:6px"><span class="sw" style="background:var(${v})"></span>${l}</div>`);
+  $("#siteLegend").innerHTML = `<div class="lh">Sites by ${colorBy === "sys" ? "observing system" : "ecosystem"}</div>` + items.join("");
+  $("#colorBy").value = colorBy;
+}
+$("#colorBy").addEventListener("change", (e) => { colorBy = e.target.value; try { localStorage.setItem("colorBy", colorBy); } catch {} renderSiteLegend(); renderMap(); renderFacets(); });
+map.createPane("trkPane").style.zIndex = 390;
+let trkLayer = null, trkOn = false, trkHi = null; const trkById = new Map();
+try { trkOn = localStorage.getItem("trkOn") === "1"; } catch {}
+const trkStyle = (f) => f.properties.id === "mobile" ? { color: "#7c2d12", weight: 2.2, dashArray: "8 6", opacity: 0.95 } : { color: "#2b2b2b", weight: 1.6, opacity: 0.85, dashArray: f.properties.transit ? "3 5" : null };
+async function buildTracks() {
+  if (trkLayer) return;
+  const fc = await fetch("tracks.json").then((r) => r.json());
+  trkLayer = L.geoJSON(fc, {
+    pane: "trkPane", renderer: L.canvas({ pane: "trkPane", padding: 0.3 }), style: trkStyle,
+    onEachFeature: (f, lyr) => {
+      trkById.set(f.properties.id, lyr);
+      lyr.bindTooltip(`<b>${esc(f.properties.label)}</b><br>${esc(f.properties.camp)}${f.properties.transit ? "<br>Transit flight (UK ↔ Dakar)" : ""}`, { sticky: true });
+      lyr.on("click", () => { const r = S.all.find((x) => x.k === f.properties.k); if (r) selectLoc(r._loc, false); });
+    },
+  });
+}
+async function renderTracks() {
+  if (trkOn) { await buildTracks(); if (!map.hasLayer(trkLayer)) trkLayer.addTo(map); } else if (trkLayer && map.hasLayer(trkLayer)) map.removeLayer(trkLayer);
+  $("#lyTrk").checked = trkOn;
+  $("#trkLegend").innerHTML = trkOn ? `<div class="lh">Tracks</div><div style="display:flex;align-items:center;gap:6px"><span style="width:16px;border-top:2px solid #2b2b2b"></span>Research flight (MOYA/ZWAMPS)</div><div style="display:flex;align-items:center;gap:6px"><span style="width:16px;border-top:2px dotted #2b2b2b"></span>Transit flight</div><div style="display:flex;align-items:center;gap:6px"><span style="width:16px;border-top:2px dashed #7c2d12"></span>Mobile flux tower route</div>` : "";
+  try { localStorage.setItem("trkOn", trkOn ? "1" : "0"); } catch {}
+}
+async function showTrack(id) {
+  trkOn = true; await renderTracks();
+  if (trkHi) trkLayer.resetStyle(trkHi);
+  const l = trkById.get(id); if (!l) return;
+  trkHi = l; l.setStyle({ color: "#d81b60", weight: 3.5, dashArray: null }); l.bringToFront();
+  map.fitBounds(l.getBounds().pad(0.2), { maxZoom: 8 });
+}
+$("#lyTrk").addEventListener("change", (e) => { trkOn = e.target.checked; renderTracks(); });
+$("#detail").addEventListener("click", (e) => { const id = e.target.dataset && e.target.dataset.trk; if (id) showTrack(id); });
+const syncBgMode = () => { bgMode = bgOn ? (bgDetail ? "eco" : "biome") : "none"; renderBg(); };
+$("#bioOn").addEventListener("change", (e) => { bgOn = e.target.checked; syncBgMode(); });
+$("#ecoDetail").addEventListener("change", (e) => { bgDetail = e.target.checked; syncBgMode(); });
+/* ---------- atmospheric footprints (3-day back trajectories) ---------- */
+const FP_MONTHS = [
+  { k: "January", c: ["#9fa8da", "#7986cb", "#5c6bc0", "#3949ab", "#1a237e"], line: ["#9fa8da", "#7986cb", "#5c6bc0", "#3949ab", "#1a237e"] },
+  { k: "March", c: ["#a5d6a7", "#66bb6a", "#43a047", "#2e7d32", "#1b5e20"], line: ["#a5d6a7", "#66bb6a", "#43a047", "#2e7d32", "#1b5e20"] },
+  { k: "July", c: ["#e1bee7", "#ce93d8", "#ab47bc", "#8e24aa", "#4a148c"], line: ["#e1bee7", "#ce93d8", "#ab47bc", "#8e24aa", "#4a148c"] },
+  { k: "October", c: ["#b0bec5", "#90a4ae", "#607d8b", "#455a64", "#263238"], line: ["#b0bec5", "#90a4ae", "#607d8b", "#455a64", "#263238"] },
+];
+const FP_LEVELS = [10, 20, 30, 40, 50];
+const FP_SITES = [
+  ["Ikenne", "Nigeria", 6.849, 3.699], ["Dja-Somalomo", "Cameroon", 3.3738, 12.7331], ["Kigali", "Rwanda", -1.9617, 30.0642, "Footprint moved from the original run's 1.96° N to Kigali's true position (1.96° S); shape approximate until the model is re-run."],
+  ["Assosa", "Ethiopia", 10.1, 34.6], ["Maun", "Botswana", -19.9022, 23.5283],
+];
+const fpRenderer = L.canvas({ padding: 0.3, pane: "fpPane" });
+const fpLayers = {}; let fpSites = null;
+let fpSel = new Set(["January"]);
+try { const v = localStorage.getItem("fpSel"); if (v !== null) fpSel = new Set(JSON.parse(v).filter((m) => FP_MONTHS.some((x) => x.k === m))); } catch {}
+const rampHtml = (c) => `<span class="ramp">${c.map((x) => `<i style="background:${x}"></i>`).join("")}</span>`;
+function buildFp(fc) {
+  for (const m of FP_MONTHS) {
+    const feats = fc.features.filter((f) => f.properties.month === m.k).sort((a, b) => a.properties.level - b.properties.level);
+    fpLayers[m.k] = L.geoJSON({ type: "FeatureCollection", features: feats }, {
+      renderer: fpRenderer,
+      style: (f) => { const i = FP_LEVELS.indexOf(f.properties.level); return { color: m.line[i], weight: [1, 1.3, 1.6, 2, 2.6][i], opacity: 1, fill: true, fillColor: m.line[i], fillOpacity: 0 }; },
+      onEachFeature: (f, lyr) => {
+        lyr.bindTooltip(`<b>${m.k}</b> · EM27 / 3-day footprint<br>≥ ${f.properties.level} ppm per kgC m⁻² h⁻¹`, { sticky: true });
+        lyr.on("click", (e) => { L.DomEvent.stopPropagation(e); lyr.openTooltip(e.latlng); });
+      },
+    });
+  }
+  fpSites = L.layerGroup(FP_SITES.map(([n, c, la, lo, note]) => L.marker([la, lo], { icon: L.divIcon({ className: "", iconSize: [13, 13], html: '<div class="fpsite"></div>' }), pane: "markerPane", keyboard: false })
+    .bindTooltip(`<b>${esc(n)}</b>, ${esc(c)}<br>New total-column site${note ? "<br><span style='font-size:11px'>" + esc(note) + "</span>" : ""}`, { direction: "top", offset: [0, -6] })));
+  $("#fpRows").innerHTML = FP_MONTHS.map((m) => `<label class="opt"><input type="checkbox" value="${m.k}">${rampHtml(m.line)}<span class="lab">${m.k}</span><span class="n">5 levels</span></label>`).join("");
+  renderFp();
+}
+function renderFp() {
+  for (const m of FP_MONTHS) { const on = fpSel.has(m.k), l = fpLayers[m.k]; if (!l) continue; if (on && !map.hasLayer(l)) l.addTo(map); if (!on && map.hasLayer(l)) map.removeLayer(l); }
+  if (fpSites) { if (fpSel.size && !map.hasLayer(fpSites)) fpSites.addTo(map); if (!fpSel.size && map.hasLayer(fpSites)) map.removeLayer(fpSites); }
+  $$("#fpRows input").forEach((i) => (i.checked = fpSel.has(i.value)));
+  const on = FP_MONTHS.filter((m) => fpSel.has(m.k));
+  $("#fpLegend").innerHTML = on.length ? `<div class="lh">EM27 / 3-day footprints</div>${on.map((m) => `<div style="display:flex;align-items:center;gap:6px">${rampHtml(m.line)}${m.k}</div>`).join("")}<div class="muted" style="font-size:11px">10 → 50 ppm per kgC m⁻² h⁻¹</div><div style="display:flex;align-items:center;gap:6px"><span class="fpsite" style="width:8px;height:8px"></span>New site</div>` : "";
+  try { localStorage.setItem("fpSel", JSON.stringify([...fpSel])); } catch {}
+  if (S.all.length) renderStats();
+}
+$("#fpRows").addEventListener("change", (e) => { const v = e.target.value; e.target.checked ? fpSel.add(v) : fpSel.delete(v); renderFp(); });
+$("#fpAll").addEventListener("click", () => { fpSel = new Set(FP_MONTHS.map((m) => m.k)); renderFp(); });
+$("#fpNone").addEventListener("click", () => { fpSel = new Set(); renderFp(); });
+$("#bgOp").addEventListener("input", (e) => { bgOpacity = +e.target.value / 100; renderBg(); });
+let baseLayer = null;
+function styleBase() {
+  const cs = getComputedStyle(document.documentElement);
+  return { renderer: baseRenderer, style: { color: cs.getPropertyValue("--border").trim(), weight: 0.7, fillColor: cs.getPropertyValue("--landfill").trim(), fillOpacity: 1 }, interactive: false };
+}
+const cluster = L.markerClusterGroup({
+  showCoverageOnHover: false, maxClusterRadius: 44, spiderfyOnMaxZoom: true, disableClusteringAtZoom: 10,
+  iconCreateFunction: (c) => {
+    const tally = new Map(); let n = 0;
+    for (const m of c.getAllChildMarkers()) { for (const r of m.options.recs) { const col = siteColor(r); tally.set(col, (tally.get(col) || 0) + 1); n++; } }
+    let acc = 0; const stops = [];
+    for (const [col, v] of tally) { const a = (acc / n) * 360, b = ((acc + v) / n) * 360; stops.push(`${col} ${a.toFixed(1)}deg ${b.toFixed(1)}deg`); acc += v; }
+    return L.divIcon({ html: `<div class="cl" style="--p:conic-gradient(${stops.join(",")})"><span>${n}</span></div>`, className: "", iconSize: [40, 40] });
+  },
+});
+map.addLayer(cluster);
+const markerByLoc = new Map();
+function renderMap() {
+  cluster.clearLayers(); markerByLoc.clear();
+  const groups = new Map();
+  for (const r of S.filtered) { if (!groups.has(r._loc)) groups.set(r._loc, []); groups.get(r._loc).push(r); }
+  const ms = [];
+  for (const [loc, recs] of groups) {
+    const lead = recs.slice().sort((a, b) => (ST_RANK[a.op] ?? 3) - (ST_RANK[b.op] ?? 3))[0];
+    const comm = recs.some((r) => r._comm), n = recs.length;
+    const icon = L.divIcon({ className: "", iconSize: n > 1 ? [18, 18] : [14, 14], html: `<div class="pin st-${lead.op}${n > 1 ? " multi" : ""}${comm ? " comm" : ""}${S.sel === loc ? " sel" : ""}" style="--c:${siteColor(lead)}">${n > 1 ? n : ""}</div>` });
+    const m = L.marker([recs[0].lat, recs[0].lon], { icon, recs, keyboard: true, title: recs[0].name || "Unnamed site" });
+    m.bindTooltip(`<b>${esc(lead.name || "Unnamed site")}</b><br>${esc(lead.sys)} · ${esc(opLabel(lead))}<br>${n} record${n > 1 ? "s" : ""} · ${esc(lead.cty.join(", "))}`, { direction: "top", offset: [0, -8] });
+    m.on("click", () => selectLoc(loc, false));
+    ms.push(m); markerByLoc.set(loc, m);
+  }
+  cluster.addLayers(ms);
+}
+map.on("moveend", () => { if (S.f.inView) { mapBounds = map.getBounds(); S.page = 0; apply(); } });
+map.on("mousemove", (e) => {
+  const v = emOn && S.em ? emAt(e.latlng.lat, e.latlng.lng) : null;
+  const emTxt = v === null ? "" : v < 0 ? "  ·  CH₄ very low" : `  ·  CH₄ ${v.toFixed(2)} g m⁻² month⁻¹`;
+  const eco = bgMode !== "none" ? ecoAt(e.latlng.lat, e.latlng.lng) : null;
+  const tv = TL.elev.on || TL.hand.on ? terrAt(e.latlng.lat, e.latlng.lng) : null;
+  const terrTxt = tv ? `${TL.elev.on ? `  ·  ${tv.elev < 0 ? "≤0" : tv.elev.toLocaleString()} m` : ""}${TL.hand.on ? `  ·  HAND ${tv.hand >= 254 ? "≥254" : tv.hand} m` : ""}` : ""; $("#coords").textContent = `${fmtLat(e.latlng.lat)}  ${fmtLon(e.latlng.lng)}${terrTxt}${eco ? "  ·  " + eco.n : ""}${emTxt}`; });
+$("#fit").addEventListener("click", () => { if (!S.filtered.length) return; const b = L.latLngBounds(S.filtered.map((r) => [r.lat, r.lon])); map.fitBounds(b.pad(0.1), { maxZoom: 9 }); });
+$("#home").addEventListener("click", () => map.fitBounds(AFRICA));
+
+function selectLoc(loc, fly) {
+  const prev = S.sel; S.sel = loc;
+  for (const k of [prev, loc]) { const m = k && markerByLoc.get(k); if (m) { const el = m.getElement(); if (el) el.querySelector(".pin")?.classList.toggle("sel", k === loc); } }
+  const recs = S.all.filter((r) => r._loc === loc);
+  renderDetail(loc); renderTable();
+  if (fly && recs.length) {
+    const z = Math.max(map.getZoom(), 7);
+    const dx = window.innerWidth > 900 && !$("#detail").hidden ? 190 : 0;
+    const target = map.unproject(map.project([recs[0].lat, recs[0].lon], z).add([dx, 0]), z);
+    map.flyTo(target, z, { duration: 0.8 });
+    map.once("moveend", () => { const m = markerByLoc.get(loc); if (m && !m.getElement()) cluster.zoomToShowLayer(m, () => {}); });
+  }
+}
+function recCard(r) {
+  const rows = [];
+  const add = (k, v) => { if (v) rows.push(`<dt>${k}</dt><dd>${v}</dd>`); };
+  add("System", esc(r.sys) + (r.inst ? ` · ${esc(r.inst)}` : ""));
+  add("Parameter", esc(r.par.join(", ")));
+  add("Period", `<span class="mono">${esc(r.sd || "?")}${r.ed ? " → " + esc(r.ed) : ""}</span>`);
+  add("Frequency", esc(r.freq));
+  add("Network", esc([r.prog, r.net].filter(Boolean).join(" · ")));
+  add("Contact", esc(r.cn) + (r.ce ? ` <span class="mono" style="user-select:all">${esc(r.ce)}</span>` : ""));
+  add("Institution", esc(r.org));
+  const du = safeUrl(r.data), pu = safeUrl(r.pub);
+  add("Data", du ? `<a href="${esc(du)}" target="_blank" rel="noopener">${esc(du.replace(/^https?:\/\//, "").slice(0, 48))}</a>` : "");
+  add("Publication", pu ? `<a href="${esc(pu)}" target="_blank" rel="noopener">${esc(pu.replace(/^https?:\/\/(dx\.)?(doi\.org\/)?/, "").slice(0, 48))}</a>` : esc(r.pub));
+  add("Open access", esc(r.oa));
+  add("Notes", esc(r.notes));
+  add("Ecoregion", r.ecoN ? `${esc(r.ecoN)} <span class="muted">· ${esc(r.biome)}</span>` : esc(r.biome || ""));
+  add("Infrastructure", esc(r.plat || ""));
+  if (r.srcs && r.srcs.length) add("Sources", esc(r.srcs.join("; ")));
+  if (r.trk) add("Track", `<button class="btn small trkbtn" data-trk="${esc(r.trk)}">Show ${r.trk === "mobile" ? "route" : "flight track"} on map</button>`);
+  add("Record", `<span class="mono">${esc(r.k)}${r.id ? " · ID " + esc(r.id) : ""}</span>`);
+  if (r._comm) add("Added by", `<span data-uid="${esc(r.by)}">${esc(contributorName(r.by))}</span>`);
+  const status = r._comm ? `<span class="pill ${r.status}">${r.status === "verified" ? "Verified" : "Pending review"}</span>` : "";
+  return `<article class="rec"><h4>${esc(r.name || "Unnamed site")} <span class="pill op-${esc(r.op)}">${esc(opLabel(r))}</span>${status}</h4><div class="gases" style="display:flex;gap:4px;flex-wrap:wrap">${r.gas.map((g) => `<span class="gas ${esc(g)}">${esc(gasLabel(g))}</span>`).join("")}<span class="pill"><span class="sw" style="background:${ecoColor(r.eco)}"></span>${esc(ECO_LABEL[r.eco] || r.eco)}</span></div><dl>${rows.join("")}</dl></article>`;
+}
+function renderDetail(loc) {
+  const d = $("#detail");
+  const all = S.all.filter((r) => r._loc === loc);
+  if (!all.length) { d.hidden = true; S.sel = null; return; }
+  const shown = all.filter((r) => S.filtered.includes(r)), hidden = all.length - shown.length;
+  const r0 = all[0];
+  d.innerHTML = `<header><div><div class="eyebrow">${esc(r0.cty.join(", "))}</div><h2>${esc(r0.name || "Unnamed site")}</h2><div class="mono muted" style="font-size:12px">${fmtLat(r0.lat)}, ${fmtLon(r0.lon)}${r0.elev != null ? ` · ${r0.elev} m a.s.l.` : ""}</div></div><button class="x" id="dclose" aria-label="Close details">×</button></header>
+  <div class="body"><div class="muted" style="font-size:12px">${all.length} record${all.length > 1 ? "s" : ""} at this location${hidden ? ` · ${hidden} hidden by your filters` : ""}</div>${(shown.length ? shown : all).map(recCard).join("")}</div>`;
+  d.hidden = false;
+  $("#dclose").onclick = () => { const p = S.sel; S.sel = null; d.hidden = true; const m = p && markerByLoc.get(p); m?.getElement()?.querySelector(".pin")?.classList.remove("sel"); renderTable(); };
+}
+
+/* ---------- table ---------- */
+const PAGE = 25;
+const COLS = [
+  { k: "name", l: "Site", s: (r) => (r.name || "~").toLowerCase() },
+  { k: "cty", l: "Country", s: (r) => r.cty.join(",") },
+  { k: "eco", l: "Ecosystem", s: (r) => r.eco },
+  { k: "sys", l: "System", s: (r) => r.sys },
+  { k: "gas", l: "Gases", s: (r) => r.gas.join(",") },
+  { k: "per", l: "Period", s: (r) => r.ys ?? 9999 },
+  { k: "op", l: "Status", s: (r) => r.op },
+  { k: "net", l: "Network", s: (r) => (r.net || "~").toLowerCase() },
+  { k: "links", l: "Links" },
+];
+function renderTable() {
+  const { key, dir } = S.sort; const col = COLS.find((c) => c.k === key);
+  const rows = S.filtered.slice().sort((a, b) => { const x = col.s(a), y = col.s(b); return (x < y ? -1 : x > y ? 1 : 0) * dir; });
+  $("#thead").innerHTML = "<tr>" + COLS.map((c) => c.s ? `<th aria-sort="${key === c.k ? (dir > 0 ? "ascending" : "descending") : "none"}"><button data-sort="${c.k}">${c.l}${key === c.k ? (dir > 0 ? " ↑" : " ↓") : ""}</button></th>` : `<th>${c.l}</th>`).join("") + "</tr>";
+  const start = S.page * PAGE, pageRows = rows.slice(start, start + PAGE);
+  $("#tbody").innerHTML = pageRows.length ? pageRows.map((r) => {
+    const du = safeUrl(r.data), pu = safeUrl(r.pub);
+    return `<tr data-loc="${r._loc}" class="${r._loc === S.sel ? "sel" : ""}" tabindex="0">
+      <td class="name">${esc(r.name || "Unnamed site")}${r._comm ? ` <span class="pill ${r.status}">${r.status === "verified" ? "Community" : "Pending"}</span>` : ""}<small>${r.lat.toFixed(3)}, ${r.lon.toFixed(3)}</small></td>
+      <td>${esc(r.cty.join(", "))}</td>
+      <td><span style="display:inline-flex;gap:6px;align-items:center"><span class="sw" style="background:${ecoColor(r.eco)}"></span>${esc(r.eco)}</span></td>
+      <td>${esc(r.sys)}</td>
+      <td><div class="gases">${r.gas.map((g) => `<span class="gas ${esc(g)}">${esc(gasLabel(g))}</span>`).join("")}</div></td>
+      <td class="mono">${period(r)}</td>
+      <td><span class="pill op-${esc(r.op)}" title="${esc(opLabel(r))}">${esc(r.op)}${r.op === "Future" && r.stg === "Candidate" ? " (cand.)" : r.op === "Future" && /^Installed/.test(r.stg || "") ? " (installed)" : ""}</span></td>
+      <td>${esc(r.net)}</td>
+      <td>${du ? `<a href="${esc(du)}" target="_blank" rel="noopener">Data ↗</a> ` : ""}${pu ? `<a href="${esc(pu)}" target="_blank" rel="noopener">Paper ↗</a>` : ""}</td></tr>`;
+  }).join("") : `<tr><td colspan="${COLS.length}" class="empty">No records match these filters. Remove a filter above or press “Reset all”.</td></tr>`;
+  const total = rows.length, pages = Math.max(1, Math.ceil(total / PAGE));
+  $("#tcount").textContent = `${total.toLocaleString()} shown`;
+  $("#pager").innerHTML = total ? `<span class="mono">${start + 1}–${Math.min(start + PAGE, total)} of ${total}</span><button class="btn small" data-pg="-1" ${S.page === 0 ? "disabled" : ""}>Previous</button><button class="btn small" data-pg="1" ${S.page >= pages - 1 ? "disabled" : ""}>Next</button>` : "";
+}
+$("#thead").addEventListener("click", (e) => { const k = e.target.closest("[data-sort]")?.dataset.sort; if (!k) return; S.sort = { key: k, dir: S.sort.key === k ? -S.sort.dir : 1 }; S.page = 0; renderTable(); });
+$("#pager").addEventListener("click", (e) => { const d = e.target.dataset.pg; if (d) { S.page += +d; renderTable(); } });
+$("#tbody").addEventListener("click", (e) => { if (e.target.closest("a")) return; const tr = e.target.closest("tr[data-loc]"); if (tr) selectLoc(tr.dataset.loc, true); });
+$("#tbody").addEventListener("keydown", (e) => { if (e.key === "Enter") { const tr = e.target.closest("tr[data-loc]"); if (tr) selectLoc(tr.dataset.loc, true); } });
+
+/* ---------- CSV export ---------- */
+const CSV_COLS = [
+  ["Record key", (r) => r.k], ["Original ID", (r) => r.id], ["Site name", (r) => r.name], ["Latitude", (r) => r.lat], ["Longitude", (r) => r.lon],
+  ["Elevation (m a.s.l.)", (r) => r.elev ?? ""], ["Country", (r) => r.cty.join("; ")], ["Ecosystem", (r) => r.eco], ["Programme", (r) => r.prog],
+  ["Network", (r) => r.net], ["Observing system", (r) => r.sys], ["Instrument", (r) => r.inst], ["Parameters", (r) => r.par.join("; ")],
+  ["Gases", (r) => r.gas.join("; ")], ["Start date", (r) => r.sd], ["End date", (r) => r.ed], ["Start year", (r) => r.ys ?? ""], ["End year", (r) => r.ye ?? ""],
+  ["Frequency", (r) => r.freq], ["Status", (r) => r.op], ["Development stage", (r) => (r.op === "Future" ? r.stg || "" : "")], ["Infrastructure type", (r) => r.plat || ""], ["Contact name", (r) => r.cn], ["Contact email", (r) => r.ce], ["Institution", (r) => r.org],
+  ["Data URL", (r) => r.data], ["Publication", (r) => r.pub], ["Open access", (r) => r.oa], ["Notes", (r) => r.notes], ["Ecoregion (RESOLVE 2017)", (r) => r.ecoN || ""], ["Biome", (r) => r.biome || ""], ["Sources", (r) => (r.srcs ? r.srcs.join("; ") : r._src)],
+];
+const csvCell = (v) => { v = String(v ?? ""); if (/^[=+\-@]/.test(v) && !/^-?\d/.test(v)) v = "'" + v; return /[",\n\r]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v; };
+const toCsv = (header, rows) => "﻿" + [header.map(csvCell).join(","), ...rows.map((r) => r.map(csvCell).join(","))].join("\r\n");
+async function offerFile(filename, text, host) {
+  const dl = S.downloads;
+  if (!dl) { try { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type: "text/csv;charset=utf-8" })); a.download = filename; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); toast("Downloaded " + filename); return; } catch (e) {} }
+  if (dl) {
+    try { await dl.save({ filename, data: text }); toast("Saved " + filename); return; }
+    catch (e) { if (e && e.code === "declined") return; if (e && e.code === "rate_limited") { toast("A save prompt is already open."); return; } }
+  }
+  if (host) { host.innerHTML = `<p class="muted" style="margin:12px 0 6px">Downloads are not available in this view. Copy the CSV below and save it as <span class="mono">${esc(filename)}</span>.</p><textarea class="copybox" readonly></textarea>`; const ta = host.querySelector("textarea"); ta.value = text; ta.select(); return; }
+  $("#copyfallback").hidden = false; $("#copytext").value = text; $("#copytext").select();
+  toast("Copy the CSV from the box below the table.");
+}
+$("#dlcsv").addEventListener("click", () => {
+  const text = toCsv(CSV_COLS.map((c) => c[0]), S.filtered.map((r) => CSV_COLS.map((c) => c[1](r))));
+  offerFile(`africa-methane-records-${new Date().toISOString().slice(0, 10)}.csv`, text);
+});
+
+/* ---------- tabs ---------- */
+const TABS = ["explore", "contribute", "review", "about"];
+function showTab(t) {
+  if (!TABS.includes(t) || $("#t-" + t).hidden) t = "explore";
+  TABS.forEach((x) => { $("#p-" + x).hidden = x !== t; $("#t-" + x).setAttribute("aria-selected", x === t); });
+  if (t === "explore") setTimeout(() => map.invalidateSize(), 0);
+  if (t === "contribute") setTimeout(initPickMap, 0);
+  try { history.replaceState(null, "", "#" + t); } catch {}
+}
+$$(".tab").forEach((b) => b.addEventListener("click", () => showTab(b.dataset.tab)));
+$("#openSide").addEventListener("click", () => { $("#side").classList.add("open"); $("#scrim").hidden = false; });
+const closeSide = () => { $("#side").classList.remove("open"); $("#scrim").hidden = true; };
+$("#closeSide").addEventListener("click", closeSide); $("#scrim").addEventListener("click", closeSide);
+
+/* ---------- passcode crypto ---------- */
+const hex = (buf) => [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+const unhex = (h) => new Uint8Array(h.match(/../g).map((x) => parseInt(x, 16)));
+async function pbkdf2(pass, saltHex, iter) {
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveBits"]);
+  return hex(await crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt: unhex(saltHex), iterations: iter }, key, 256));
+}
+async function checkPass(p) { const c = S.config; if (!c || !c.hash) return false; return (await pbkdf2(p.trim(), c.salt, c.iter || 150000)) === c.hash; }
+
+/* ---------- contributor helpers ---------- */
+function contributorName(uid) { const c = S.contributors[uid]; return c ? `${c.name}${c.org ? ", " + c.org : ""}` : "A contributor"; }
+const myProfile = () => (S.me ? S.contributors[S.me] : null);
+const myRecords = () => (S.me ? S.subs[S.me] || [] : []);
+function unlocked() { const p = myProfile(); if (!p) return false; if (S.isAdmin) return true; return !!(S.config && p.pv === S.config.version); }
+
+let writeChain = Promise.resolve();
+function queued(fn) { const p = writeChain.then(fn, fn); writeChain = p.catch(() => {}); return p; }
+function explainWriteError(e) {
+  const c = e && e.code;
+  if (c === "invalid_argument") return "The database refused the write. Your access level on this page may be Viewer; ask the owner for Contributor access.";
+  if (c === "quota_exceeded") return "The database is full. Ask a coordinator to clear old records.";
+  if (c === "resource_exhausted") return "Too many saves in a short time. Wait a few seconds and try again.";
+  return "The save did not go through (" + (c || "unknown error") + "). Try again in a moment.";
+}
+async function saveMine(records) {
+  const body = { uid: S.me, records, updatedAt: nowIso() };
+  if (JSON.stringify(body).length > 250000) throw { code: "too_big" };
+  return queued(() => S.db.doc("submissions/" + S.me).set(body));
+}
+
+/* ---------- account card ---------- */
+function renderSteps() {
+  const p = myProfile(), u = unlocked();
+  const st = [
+    { t: "Create account", d: "Your name and institution are shown with your records.", done: !!p },
+    { t: "Enter passcode", d: "Ask the database coordinators for the current passcode.", done: u },
+    { t: "Add records", d: "Use the form or upload a CSV.", done: myRecords().length > 0 },
+  ];
+  const nowIdx = st.findIndex((x) => !x.done);
+  $("#steps").innerHTML = st.map((s, i) => `<div class="step ${s.done ? "done" : i === nowIdx ? "now" : ""}"><span class="eyebrow">Step ${i + 1}${s.done ? " · done" : ""}</span><b>${s.t}</b><span class="muted">${s.d}</span></div>`).join("");
+}
+let acctSig = "";
+function renderAccount() {
+  renderSteps();
+  const host = $("#acct");
+  const p0 = myProfile();
+  const sig = JSON.stringify([!!S.db, S.me, S.canWrite, !!p0, !!S.editingProfile, unlocked(), !!(S.config && S.config.hash), S.config && S.config.version, !S.editingProfile && p0 ? [p0.name, p0.org, p0.email, p0.country, p0.orcid, p0.role] : 0, S.isAdmin]);
+  if (sig === acctSig) return;
+  acctSig = sig;
+  const showForms = (on) => {
+    $("#formcard").hidden = !on; $("#bulkcard").hidden = !on;
+    if (on && !S.formReady) { S.formReady = true; resetForm(); }
+    if (on && !$("#p-contribute").hidden) setTimeout(initPickMap, 0);
+  };
+  if (!S.db) { host.hidden = true; showForms(false); return; }
+  if (!S.me) { host.innerHTML = `<h2>Contributor account</h2><div class="note warn">Sign in to claude.ai to create a contributor account. The page uses your sign-in to know which records are yours.</div>`; showForms(false); return; }
+  if (S.canWrite === false) { host.innerHTML = `<h2>Contributor account</h2><div class="note warn">You can view this atlas but not add to it. Ask the atlas owner to give you <b>Contributor</b> access in the share menu, then reload.</div>`; showForms(false); return; }
+  const p = myProfile();
+  if (!p || S.editingProfile) {
+    const v = p || { name: "", org: "", email: "", country: "", orcid: "", role: "" };
+    host.innerHTML = `<h2>${p ? "Edit your account" : "Create your contributor account"}</h2><p class="lead">These details are visible to everyone who can open the atlas, next to the records you add.</p>
+    <form id="pform" novalidate><div class="grid">
+      <div class="field"><label for="p_name">Full name <span class="req">*</span></label><input id="p_name" maxlength="120" value="${esc(v.name)}" autocomplete="name"></div>
+      <div class="field"><label for="p_org">Institution <span class="req">*</span></label><input id="p_org" maxlength="200" value="${esc(v.org)}" autocomplete="organization"></div>
+      <div class="field"><label for="p_email">Work email <span class="req">*</span></label><input id="p_email" type="email" maxlength="200" value="${esc(v.email)}" autocomplete="email"></div>
+      <div class="field"><label for="p_country">Country</label><select id="p_country">${countryOptions(v.country)}</select></div>
+      <div class="field"><label for="p_orcid">ORCID iD</label><input id="p_orcid" placeholder="0000-0002-1825-0097" value="${esc(v.orcid)}"></div>
+      <div class="field"><label for="p_role">Role</label><select id="p_role">${["", "Researcher", "Student", "Data manager", "Network coordinator", "Other"].map((o) => `<option ${o === v.role ? "selected" : ""} value="${o}">${o || "Choose…"}</option>`).join("")}</select></div>
+      ${!p && !S.isAdmin ? `<div class="field full"><label for="p_pass">Submission passcode <span class="req">*</span></label><input id="p_pass" type="password" autocomplete="off" style="max-width:320px"><span class="hint">${S.config && S.config.hash ? "Provided by the database coordinators." : "No passcode has been set yet. A coordinator must set one before anyone can join."}</span></div>` : ""}
+    </div><div id="pmsg"></div><div class="actions"><button class="btn primary" type="submit" id="p_save">${p ? "Save changes" : "Create account"}</button>${p ? `<button class="btn" type="button" id="p_cancel">Cancel</button>` : ""}</div></form>`;
+    $("#pform").addEventListener("submit", saveProfile);
+    if (p) $("#p_cancel").onclick = () => { S.editingProfile = false; renderAccount(); };
+    showForms(false); return;
+  }
+  const u = unlocked();
+  host.innerHTML = `<div class="prof"><img id="meavatar" alt=""><div class="t"><div class="eyebrow">Signed in as contributor</div><b>${esc(p.name)}</b><div class="muted">${esc([p.role, p.org, p.country].filter(Boolean).join(" · "))}</div><div class="muted mono" style="font-size:12px">${esc(p.email)}${p.orcid ? " · ORCID " + esc(p.orcid) : ""}</div></div>
+   <div style="display:flex;gap:8px;flex-wrap:wrap">${S.isAdmin ? '<span class="pill verified">Coordinator</span>' : u ? '<span class="pill verified">Passcode accepted</span>' : ""}<button class="btn small" id="p_edit">Edit account</button></div></div>
+   ${u ? "" : `<form id="uform" class="formsec" style="margin-top:14px" novalidate><h3>${S.config && S.config.hash ? "The submission passcode has changed" : "Waiting for a passcode"}</h3><p class="muted" style="margin:0 0 8px">${S.config && S.config.hash ? "Enter the current passcode to keep adding records." : "A coordinator has not set a submission passcode yet."}</p><div style="display:flex;gap:8px;flex-wrap:wrap;max-width:460px"><input id="u_pass" type="password" autocomplete="off" class="search" style="flex:1;min-width:180px" aria-label="Passcode"><button class="btn primary" id="u_go">Unlock</button></div><div id="umsg" style="margin-top:8px"></div></form>`}`;
+  if (S.meObj) $("#meavatar").src = S.meObj.avatarUrl;
+  $("#p_edit").onclick = () => { S.editingProfile = true; renderAccount(); };
+  if (!u) $("#uform").addEventListener("submit", unlock);
+  showForms(u);
+}
+function countryOptions(sel) { return `<option value="">Choose…</option>` + S.countries.map((c) => `<option ${c === sel ? "selected" : ""}>${esc(c)}</option>`).join(""); }
+function setMsg(id, kind, text) { $(id).innerHTML = text ? `<div class="note ${kind}" style="margin-top:10px">${text}</div>` : ""; }
+async function saveProfile(e) {
+  e.preventDefault();
+  const p = myProfile();
+  const v = { name: $("#p_name").value.trim(), org: $("#p_org").value.trim(), email: $("#p_email").value.trim(), country: $("#p_country").value, orcid: $("#p_orcid").value.trim(), role: $("#p_role").value };
+  const errs = [];
+  if (v.name.length < 2) errs.push("Enter your full name.");
+  if (!v.org) errs.push("Enter your institution.");
+  if (!/^\S+@\S+\.\S+$/.test(v.email)) errs.push("Enter a valid email address.");
+  if (v.orcid && !/^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/.test(v.orcid)) errs.push("ORCID iD should look like 0000-0002-1825-0097.");
+  let pv = p ? p.pv ?? null : null;
+  if (!p && !S.isAdmin) {
+    const pass = $("#p_pass").value;
+    if (!S.config || !S.config.hash) errs.push("No passcode has been set yet, so accounts cannot be created.");
+    else if (!pass) errs.push("Enter the submission passcode.");
+    else { $("#p_save").disabled = true; setMsg("#pmsg", "", "Checking passcode…"); const ok = await checkPass(pass); $("#p_save").disabled = false; if (!ok) errs.push("That passcode is not correct. Check it with the database coordinators."); else pv = S.config.version; }
+  }
+  if (S.isAdmin && S.config) pv = S.config.version;
+  if (errs.length) { setMsg("#pmsg", "bad", errs.map(esc).join("<br>")); return; }
+  $("#p_save").disabled = true;
+  try {
+    await queued(() => S.db.doc("contributors/" + S.me).set({ uid: S.me, ...v, pv, createdAt: p ? p.createdAt : nowIso(), updatedAt: nowIso() }));
+    S.editingProfile = false; toast(p ? "Account updated" : "Account created");
+  } catch (err) { setMsg("#pmsg", "bad", esc(explainWriteError(err))); $("#p_save").disabled = false; }
+}
+async function unlock(e) {
+  e.preventDefault();
+  const pass = $("#u_pass").value; if (!pass) return;
+  $("#u_go").disabled = true; setMsg("#umsg", "", "Checking…");
+  const ok = await checkPass(pass);
+  if (!ok) { $("#u_go").disabled = false; setMsg("#umsg", "bad", "That passcode is not correct."); return; }
+  try { await queued(() => S.db.doc("contributors/" + S.me).update({ pv: S.config.version, updatedAt: nowIso() })); toast("Unlocked"); }
+  catch (err) { $("#u_go").disabled = false; setMsg("#umsg", "bad", esc(explainWriteError(err))); }
+}
+
+/* ---------- record normalisation (form + CSV) ---------- */
+const CTY_ALIAS = { "congo, the democratic republic of the": "DR Congo", "democratic republic of the congo": "DR Congo", drc: "DR Congo", "tanzania, united republic of": "Tanzania", congo: "Republic of the Congo", "republic of congo": "Republic of the Congo", "cote d'ivoire": "Côte d'Ivoire", "ivory coast": "Côte d'Ivoire" };
+const OP_ALIAS = { yes: "Operational", y: "Operational", operational: "Operational", no: "Ended", n: "Ended", ended: "Ended", future: "Future|Funded / planned", planned: "Future|Funded / planned", "future|funded / planned": "Future|Funded / planned", potential: "Future|Candidate", candidate: "Future|Candidate", "future|candidate": "Future|Candidate", installed: "Future|Installed, not yet operational", "future|installed, not yet operational": "Future|Installed, not yet operational" };
+const PAR_ALIAS = { flux: "Flux", "concentration (surface)": "Surface concentration", "surface concentration": "Surface concentration", "concentration (column)": "Column concentration", "column concentration": "Column concentration" };
+const GAS_ALIAS = { ch4: "CH4", co2: "CO2", n2o: "N2O", "13c-ch4": "13C-CH4", "d13c-ch4": "13C-CH4", "δ13c-ch4": "13C-CH4" };
+function parseDate(t) {
+  t = String(t || "").trim(); if (!t) return { s: "", y: null };
+  let m = t.match(/^(\d{4})-(\d{2})-(\d{2})/); if (m) { const d = new Date(m[0] + "T00:00:00Z"); if (!isNaN(d)) return { s: m[0], y: +m[1] }; }
+  m = t.match(/^(\d{4})-(\d{2})$/); if (m) return { s: t, y: +m[1] };
+  m = t.match(/^(\d{4})$/); if (m) return { s: t, y: +m[1] };
+  m = t.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/); if (m) return { s: `${m[3]}-${m[2].padStart(2, "0")}-${m[1].padStart(2, "0")}`, y: +m[3] };
+  return { s: t, y: null, bad: true };
+}
+const splitList = (v) => String(v || "").split(/[;,|]/).map((x) => x.trim()).filter(Boolean);
+function normalise(v) {
+  const errors = {}, warnings = [];
+  const num = (x) => { x = String(x ?? "").trim().replace(",", "."); return x === "" ? null : Number(x); };
+  const lat = num(v.lat), lon = num(v.lon), elev = num(v.elev);
+  const name = String(v.name || "").trim();
+  if (!name) errors.name = "Enter a site name.";
+  if (lat == null || isNaN(lat) || lat < -90 || lat > 90) errors.lat = "Latitude must be a number between -90 and 90.";
+  if (lon == null || isNaN(lon) || lon < -180 || lon > 180) errors.lon = "Longitude must be a number between -180 and 180.";
+  if (!errors.lat && !errors.lon && (lat < -56 || lat > 48 || lon < -40 || lon > 85)) warnings.push("These coordinates are outside Africa and its islands. Check the signs (south and west are negative).");
+  if (elev != null && (isNaN(elev) || elev < -500 || elev > 6000)) errors.elev = "Elevation should be in metres, between -500 and 6000.";
+  let country = String(v.country || "").trim().replace(/^"|"$/g, ""); country = CTY_ALIAS[country.toLowerCase()] || country;
+  if (!country) errors.country = "Choose a country."; else if (!S.countries.includes(country)) errors.country = `“${country}” is not in the country list.`;
+  let eco = String(v.eco || "").trim(); eco = ["River", "Lake", "Land", "Geology"].find((x) => x.toLowerCase() === eco.toLowerCase()) || "";
+  if (!eco) errors.eco = "Choose River, Lake, Land or Geology.";
+  let sys = String(v.sys || "").trim(); sys = SYS_ALIAS[sys.toLowerCase()] || sys; if (!sys) errors.sys = "Choose an observing system.";
+  const gas = [...new Set((Array.isArray(v.gas) ? v.gas : splitList(v.gas)).map((g) => GAS_ALIAS[g.toLowerCase()] || g))];
+  if (!gas.length) errors.gas = "Tick at least one gas.";
+  const par = [...new Set((Array.isArray(v.par) ? v.par : splitList(v.par)).map((p) => PAR_ALIAS[p.toLowerCase()] || p))];
+  const sd = parseDate(v.sd), ed = parseDate(v.ed);
+  if (!sd.s) errors.sd = "Enter a start date or year."; else if (sd.bad) errors.sd = "Use YYYY, YYYY-MM or YYYY-MM-DD.";
+  if (ed.bad) errors.ed = "Use YYYY, YYYY-MM or YYYY-MM-DD.";
+  if (!errors.sd && !errors.ed && ed.s && ed.s < sd.s) errors.ed = "End date is before the start date.";
+  const opFull = OP_ALIAS[String(v.op || "").trim().toLowerCase()] || ""; if (!opFull) errors.op = "Choose a status.";
+  const [op, stg] = opFull.split("|");
+  const ce = String(v.ce || "").trim(); if (ce && !/^\S+@\S+\.\S+$/.test(ce)) errors.ce = "Check the email address.";
+  const data = String(v.data || "").trim(); if (data && !safeUrl(data)) errors.data = "Enter a full link starting with https://";
+  const pub = String(v.pub || "").trim(); if (pub && !safeUrl(pub)) warnings.push("The publication is not a DOI or link. It will be stored as text.");
+  let oa = String(v.oa || "").trim(); oa = { y: "Yes", yes: "Yes", n: "No", no: "No" }[oa.toLowerCase()] || oa;
+  const rec = {
+    name: name.slice(0, 200), lat: lat != null ? Math.round(lat * 1e5) / 1e5 : null, lon: lon != null ? Math.round(lon * 1e5) / 1e5 : null, elev: elev != null && !isNaN(elev) ? elev : null,
+    cty: [country], eco, sys, inst: String(v.inst || "").trim().slice(0, 120), net: String(v.net || "").trim().slice(0, 120), prog: "",
+    gas, par, sd: sd.s, ed: ed.s, ys: sd.y, ye: ed.y ?? (op === "Operational" ? new Date().getFullYear() : sd.y), stg: stg || "",
+    freq: String(v.freq || "").trim(), op, cn: String(v.cn || "").trim().slice(0, 120), ce, org: String(v.org || "").trim().slice(0, 200),
+    data, pub: safeUrl(pub) || pub, oa, plat: "", notes: String(v.notes || "").trim().slice(0, 1500), id: "",
+  };
+  if (!Object.keys(errors).length) {
+    const dup = S.all.find((r) => r.k !== v.k && Math.abs(r.lat - rec.lat) < 0.001 && Math.abs(r.lon - rec.lon) < 0.001 && (r.sd || "") === rec.sd && r.sys === rec.sys);
+    if (dup) warnings.push(`A similar record already exists at this spot (${dup.k}: ${dup.name || "unnamed"}, ${dup.sys}, ${dup.sd}). Submit only if this is a different dataset.`);
+  }
+  return { rec, errors, warnings };
+}
+
+/* ---------- single record form ---------- */
+const FORM_FIELDS = ["name", "lat", "lon", "elev", "country", "eco", "sys", "inst", "net", "freq", "sd", "ed", "op", "cn", "ce", "org", "data", "pub", "oa", "notes"];
+function readForm() {
+  const v = {}; FORM_FIELDS.forEach((k) => (v[k] = $("#f_" + k).value));
+  v.gas = $$("#f_gas input:checked").map((i) => i.value); v.par = $$("#f_par input:checked").map((i) => i.value);
+  if (S.editing) v.k = S.editing; return v;
+}
+function fillForm(r) {
+  const m = { name: r.name, lat: r.lat ?? "", lon: r.lon ?? "", elev: r.elev ?? "", country: r.cty ? r.cty[0] : "", eco: r.eco, sys: r.sys, inst: r.inst, net: r.net, freq: r.freq, sd: r.sd, ed: r.ed, op: r.op === "Future" ? `Future|${r.stg || "Funded / planned"}` : r.op === "Planned" ? "Future|Funded / planned" : r.op === "Potential" ? "Future|Candidate" : r.op, cn: r.cn, ce: r.ce, org: r.org, data: r.data, pub: r.pub, oa: r.oa, notes: r.notes };
+  FORM_FIELDS.forEach((k) => ($("#f_" + k).value = m[k] ?? ""));
+  $$("#f_gas input").forEach((i) => (i.checked = (r.gas || []).includes(i.value)));
+  $$("#f_par input").forEach((i) => (i.checked = (r.par || []).includes(i.value)));
+  syncPin();
+}
+function showErrors(errors) {
+  $$("#recform .field").forEach((f) => { f.classList.remove("bad"); f.querySelector(".err")?.remove(); });
+  for (const [k, msg] of Object.entries(errors)) {
+    const el = $("#f_" + k); if (!el) continue; const f = el.closest(".field"); f.classList.add("bad");
+    const s = document.createElement("span"); s.className = "err"; s.textContent = msg; f.appendChild(s);
+  }
+}
+function resetForm() {
+  S.editing = null; $("#recform").reset(); showErrors({}); setMsg("#formmsg", "", "");
+  const p = myProfile(); if (p) { $("#f_cn").value = p.name; $("#f_ce").value = p.email; $("#f_org").value = p.org; if (p.country) $("#f_country").value = p.country; }
+  $("#formtitle").textContent = "New record"; $("#f_submit").textContent = "Submit record"; $("#f_cancel").hidden = true; syncPin();
+}
+let pendingWarn = null;
+$("#recform").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if (!unlocked()) { setMsg("#formmsg", "bad", "Enter the current passcode above before submitting."); return; }
+  const v = readForm(); const { rec, errors, warnings } = normalise(v);
+  showErrors(errors);
+  if (Object.keys(errors).length) { setMsg("#formmsg", "bad", `Fix ${Object.keys(errors).length} field${Object.keys(errors).length > 1 ? "s" : ""} marked in red.`); $("#recform .field.bad input, #recform .field.bad select")?.focus(); return; }
+  const sig = JSON.stringify(rec);
+  if (warnings.length && pendingWarn !== sig) { pendingWarn = sig; setMsg("#formmsg", "warn", warnings.map(esc).join("<br>") + "<br><b>Press Submit again to save anyway.</b>"); return; }
+  pendingWarn = null;
+  const mine = myRecords().slice(); const t = nowIso();
+  if (S.editing) { const i = mine.findIndex((r) => r.k === S.editing); if (i >= 0) mine[i] = { ...mine[i], ...rec, k: S.editing, updatedAt: t }; }
+  else mine.push({ ...rec, k: "C" + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 5).toUpperCase(), createdAt: t, updatedAt: t });
+  $("#f_submit").disabled = true;
+  try { await saveMine(mine); toast(S.editing ? "Record updated and sent for review" : "Record submitted for review"); resetForm(); }
+  catch (err) { setMsg("#formmsg", "bad", err.code === "too_big" ? "Your submissions have reached the storage limit for one contributor (about 400 records). Ask a coordinator to archive older ones." : esc(explainWriteError(err))); }
+  $("#f_submit").disabled = false;
+});
+$("#f_clear").addEventListener("click", resetForm);
+$("#f_cancel").addEventListener("click", resetForm);
+
+/* pick map */
+let pickMap = null, pickPin = null;
+function initPickMap() {
+  if ($("#formcard").hidden) return;
+  if (pickMap) { pickMap.invalidateSize(); return; }
+  pickMap = L.map("pickmap", { attributionControl: false, minZoom: 2, maxZoom: 11 }).fitBounds(AFRICA);
+  if (S.basemap) L.geoJSON(S.basemap, { ...styleBase(), renderer: L.canvas() }).addTo(pickMap);
+  pickMap.on("click", (e) => { $("#f_lat").value = e.latlng.lat.toFixed(5); $("#f_lon").value = e.latlng.lng.toFixed(5); syncPin(); });
+  syncPin();
+}
+function syncPin() {
+  if (!pickMap) return;
+  const la = parseFloat($("#f_lat").value), lo = parseFloat($("#f_lon").value);
+  if (isNaN(la) || isNaN(lo)) { if (pickPin) { pickMap.removeLayer(pickPin); pickPin = null; } return; }
+  const icon = L.divIcon({ className: "", iconSize: [16, 16], html: `<div class="pin comm" style="--c:var(--accent);width:16px;height:16px"></div>` });
+  if (!pickPin) { pickPin = L.marker([la, lo], { draggable: true, icon }).addTo(pickMap); pickPin.on("dragend", () => { const p = pickPin.getLatLng(); $("#f_lat").value = p.lat.toFixed(5); $("#f_lon").value = p.lng.toFixed(5); }); }
+  else pickPin.setLatLng([la, lo]);
+}
+["#f_lat", "#f_lon"].forEach((s) => $(s).addEventListener("change", () => { syncPin(); const la = parseFloat($("#f_lat").value), lo = parseFloat($("#f_lon").value); if (pickMap && !isNaN(la) && !isNaN(lo)) pickMap.setView([la, lo], Math.max(pickMap.getZoom(), 6)); }));
+
+/* ---------- my submissions ---------- */
+function renderMine() {
+  const recs = myRecords();
+  $("#minecard").hidden = !(S.me && recs.length);
+  if (!recs.length) return;
+  const order = { rejected: 0, pending: 1, verified: 2 };
+  const rows = recs.map((r) => ({ r, st: reviewStatus(r) })).sort((a, b) => order[a.st] - order[b.st] || (b.r.updatedAt || "").localeCompare(a.r.updatedAt || ""));
+  const c = { pending: 0, verified: 0, rejected: 0 }; rows.forEach((x) => c[x.st]++);
+  $("#mine").innerHTML = `<p class="muted" style="margin:0 0 6px">${recs.length} records · ${c.verified} verified · ${c.pending} pending${c.rejected ? ` · ${c.rejected} returned` : ""}</p><div class="list">` + rows.map(({ r, st }) => {
+    const d = S.reviews[r.k];
+    return `<div class="li"><div class="t"><b>${esc(r.name)}</b><small class="mono">${esc(r.k)} · ${r.lat}, ${r.lon} · ${esc(r.sys)} · ${esc(r.sd)}</small>${st === "rejected" && d && d.reason ? `<div class="note bad" style="margin-top:6px;padding:6px 10px">Returned: ${esc(d.reason)}</div>` : ""}</div>
+      <span class="pill ${st}">${st === "verified" ? "Verified" : st === "pending" ? "Pending review" : "Returned"}</span>
+      <button class="btn small" data-edit="${esc(r.k)}">Edit</button><button class="btn small danger" data-del="${esc(r.k)}">Delete</button></div>`;
+  }).join("") + "</div>";
+}
+$("#mine").addEventListener("click", async (e) => {
+  const ek = e.target.dataset.edit, dk = e.target.dataset.del;
+  if (ek) {
+    const r = myRecords().find((x) => x.k === ek); if (!r) return;
+    S.editing = ek; fillForm(r); $("#formtitle").textContent = "Edit record " + ek; $("#f_submit").textContent = "Save changes"; $("#f_cancel").hidden = false;
+    setMsg("#formmsg", "warn", "Saved changes go back to the review queue."); $("#formcard").scrollIntoView({ behavior: "smooth" });
+  }
+  if (dk) {
+    if (e.target.dataset.confirm !== "1") { e.target.dataset.confirm = "1"; e.target.textContent = "Confirm delete"; setTimeout(() => { if (e.target.isConnected) { e.target.dataset.confirm = ""; e.target.textContent = "Delete"; } }, 4000); return; }
+    try { await saveMine(myRecords().filter((x) => x.k !== dk)); toast("Record deleted"); if (S.editing === dk) resetForm(); }
+    catch (err) { toast(explainWriteError(err)); }
+  }
+});
+
+/* ---------- bulk CSV ---------- */
+const TEMPLATE = ["name", "lat", "lon", "elevation_m", "country", "ecosystem", "observing_system", "instrument", "network", "parameters", "gases", "start_date", "end_date", "frequency", "status", "contact_name", "contact_email", "institution", "data_url", "publication", "open_access", "notes"];
+const HMAP = {
+  name: ["name", "site name", "site", "name_location_fullname (e.g., tower name)"], lat: ["lat", "latitude", "lat (dd)"], lon: ["lon", "longitude", "long", "lon (dd)"],
+  elev: ["elevation_m", "elevation", "elevation (masl)", "elevation (m a.s.l.)"], country: ["country", "location (country)"], eco: ["ecosystem"],
+  sys: ["observing_system", "observing system", "observing_sytem", "system"], inst: ["instrument", "observing_instrument"], net: ["network", "network_name (e.g., saeon; fluxnet-ch4)"],
+  par: ["parameters", "parameter", "observing_parameter"], gas: ["gases", "gas", "observing_gas"], sd: ["start_date", "start date", "obs_start_date"], ed: ["end_date", "end date", "obs_end_date"],
+  freq: ["frequency", "obs_frequency"], op: ["status", "operational y/n", "operational"], cn: ["contact_name", "contact name"], ce: ["contact_email", "contact email"],
+  org: ["institution"], data: ["data_url", "data url", "url_data (zenodo etc)"], pub: ["publication", "url_publication", "doi"], oa: ["open_access", "open access", "open access y/n?"], notes: ["notes"],
+};
+$("#tpl").addEventListener("click", () => {
+  const ex = ["Lake Kivu – Gisenyi basin", "-1.7215", "29.2280", "1463", "Rwanda", "Lake", "Ship/canoe", "Picarro G2201-i", "", "Surface concentration", "CH4; CO2", "2023-02-14", "2023-02-20", "Periodic", "Ended", "", "", "", "https://zenodo.org/records/0000000", "10.5194/bg-00-0000-2023", "Yes", "Example row. Delete before uploading."];
+  offerFile("africa-methane-template.csv", toCsv(TEMPLATE, [ex]), $("#bulkout"));
+});
+$("#csvfile").addEventListener("change", (e) => {
+  const file = e.target.files[0]; e.target.value = ""; if (!file) return;
+  if (!window.Papa) { $("#bulkout").innerHTML = `<div class="note bad">The CSV reader did not load. Reload the page and try again.</div>`; return; }
+  Papa.parse(file, { header: true, skipEmptyLines: "greedy", transformHeader: (h) => h.replace(/^﻿/, "").trim().toLowerCase(), complete: (res) => bulkPreview(res, file.name) });
+});
+function bulkPreview(res, fname) {
+  const headers = res.meta.fields || [];
+  const pick = {}; for (const [k, alts] of Object.entries(HMAP)) pick[k] = headers.find((h) => alts.includes(h));
+  const missing = ["name", "lat", "lon"].filter((k) => !pick[k]);
+  if (missing.length) { $("#bulkout").innerHTML = `<div class="note bad" style="margin-top:12px">${esc(fname)} is missing the column${missing.length > 1 ? "s" : ""} ${missing.map((m) => TEMPLATE[["name", "lat", "lon"].indexOf(m)]).join(", ")}. Start from the template.</div>`; return; }
+  const p = myProfile() || {};
+  const rows = res.data.slice(0, 1000).map((row, i) => {
+    const v = {}; for (const k of Object.keys(HMAP)) v[k] = pick[k] ? row[pick[k]] : "";
+    if (!v.cn) v.cn = p.name; if (!v.ce) v.ce = p.email; if (!v.org) v.org = p.org;
+    const n = normalise(v); return { i: i + 2, ...n };
+  });
+  const good = rows.filter((r) => !Object.keys(r.errors).length);
+  S.bulk = good.map((r) => r.rec);
+  const unmapped = headers.filter((h) => !Object.values(pick).includes(h));
+  $("#bulkout").innerHTML = `<div class="note ${good.length === rows.length ? "ok" : "warn"}" style="margin-top:12px"><b>${esc(fname)}</b>: ${rows.length} rows read, ${good.length} ready, ${rows.length - good.length} with problems.${res.data.length > 1000 ? " Only the first 1000 rows were read." : ""}${unmapped.length ? `<br>Ignored columns: ${esc(unmapped.join(", "))}` : ""}</div>
+   <div class="prev" style="margin-top:10px"><table><thead><tr><th>Row</th><th>Site</th><th>Lat, Lon</th><th>Country</th><th>Result</th></tr></thead><tbody>${rows.map((r) => `<tr><td class="mono">${r.i}</td><td>${esc(r.rec.name)}</td><td class="mono">${r.rec.lat ?? "?"}, ${r.rec.lon ?? "?"}</td><td>${esc(r.rec.cty[0])}</td><td>${Object.keys(r.errors).length ? `<span style="color:var(--bad)">${esc(Object.values(r.errors).join(" "))}</span>` : r.warnings.length ? `<span style="color:var(--warn)">${esc(r.warnings.join(" "))}</span>` : '<span style="color:var(--ok)">Ready</span>'}</td></tr>`).join("")}</tbody></table></div>
+   <div class="actions">${good.length ? `<button class="btn primary" id="bulkgo">Submit ${good.length} record${good.length > 1 ? "s" : ""}</button>` : ""}<button class="btn" id="bulkx">Discard</button></div><div id="bulkmsg"></div>`;
+  $("#bulkx").onclick = () => { S.bulk = null; $("#bulkout").innerHTML = ""; };
+  if (good.length) $("#bulkgo").onclick = async () => {
+    if (!unlocked()) { setMsg("#bulkmsg", "bad", "Enter the current passcode above first."); return; }
+    const t = nowIso(), base = Date.now();
+    const add = S.bulk.map((r, j) => ({ ...r, k: "C" + (base + j).toString(36).toUpperCase() + Math.random().toString(36).slice(2, 5).toUpperCase(), createdAt: t, updatedAt: t }));
+    $("#bulkgo").disabled = true;
+    try { await saveMine(myRecords().concat(add)); toast(`${add.length} records submitted for review`); S.bulk = null; $("#bulkout").innerHTML = ""; }
+    catch (err) { $("#bulkgo").disabled = false; setMsg("#bulkmsg", "bad", err.code === "too_big" ? "That upload would exceed the storage limit for one contributor (about 400 records). Split the file or ask a coordinator." : esc(explainWriteError(err))); }
+  };
+}
+
+/* ---------- review (coordinators) ---------- */
+function allPending() {
+  const out = [];
+  for (const [uid, recs] of Object.entries(S.subs)) for (const r of recs || []) if (reviewStatus(r) === "pending") out.push({ uid, r });
+  return out;
+}
+function renderReview() {
+  $("#t-review").hidden = !S.isAdmin;
+  if (!S.isAdmin) return;
+  const pend = allPending();
+  $("#pendingDot").hidden = !pend.length; $("#pendingDot").textContent = pend.length;
+  const byUid = {}; pend.forEach((x) => (byUid[x.uid] = byUid[x.uid] || []).push(x.r));
+  $("#queue").innerHTML = pend.length ? Object.entries(byUid).map(([uid, recs]) => `<div class="formsec"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:6px"><h3 style="margin:0;flex:1">${esc(contributorName(uid))} <span class="muted" style="font-weight:400;font-size:13px">· ${recs.length} pending</span></h3><button class="btn small" data-vall="${esc(uid)}">Verify all ${recs.length}</button></div>
+    <div class="list">${recs.map((r) => `<div class="li"><div class="t"><b>${esc(r.name)}</b><small class="mono">${esc(r.k)} · ${r.lat}, ${r.lon} · ${esc(r.cty[0])} · ${esc(r.eco)} · ${esc(r.sys)} · ${esc((r.gas || []).join("/"))} · ${esc(r.sd)}${r.ed ? "→" + esc(r.ed) : ""}</small>${r.notes ? `<small style="display:block">${esc(r.notes.slice(0, 200))}</small>` : ""}</div>
+    <button class="btn small" data-show="${esc(r.lat.toFixed(4) + "," + r.lon.toFixed(4))}">Map</button><button class="btn small primary" data-ok="${esc(r.k)}" data-uid="${esc(uid)}">Verify</button><button class="btn small danger" data-ret="${esc(r.k)}" data-uid="${esc(uid)}">Return…</button></div>`).join("")}</div></div>`).join("") : `<div class="note ok">Nothing waiting. New submissions will appear here.</div>`;
+  const c = S.config;
+  $("#pcstate").innerHTML = c && c.hash ? `A passcode is set (version ${esc(c.version)}, changed ${esc((c.updatedAt || "").slice(0, 10))}). It is stored only as a salted PBKDF2 hash, so it cannot be displayed. Share it with contributors directly.` : "No passcode is set, so nobody can create a contributor account yet.";
+  const cs = Object.values(S.contributors).sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+  $("#contribs").innerHTML = cs.length ? `<div class="list">${cs.map((c) => { const n = (S.subs[c.uid] || []).length; return `<div class="li"><div class="t"><b>${esc(c.name)}</b><small>${esc([c.role, c.org, c.country].filter(Boolean).join(" · "))} · <span class="mono">${esc(c.email)}</span>${c.orcid ? " · ORCID " + esc(c.orcid) : ""}</small></div><span class="pill">${n} record${n === 1 ? "" : "s"}</span>${S.config && c.pv === S.config.version ? '<span class="pill verified">Current passcode</span>' : '<span class="pill pending">Needs new passcode</span>'}</div>`; }).join("")}</div>` : `<p class="muted">No contributor accounts yet.</p>`;
+}
+async function decide(entries) {
+  const ref = S.db.doc("admin/reviews");
+  const payload = {}; for (const [k, d] of entries) payload[k] = d;
+  try {
+    await queued(async () => { const snap = await ref.get(); if (snap.exists) await ref.update({ decisions: payload }); else await ref.set({ decisions: payload }); });
+    return true;
+  } catch (err) { toast(explainWriteError(err)); return false; }
+}
+$("#queue").addEventListener("click", async (e) => {
+  const t = e.target, d = t.dataset;
+  const find = (uid, k) => (S.subs[uid] || []).find((r) => r.k === k);
+  if (d.show) { showTab("explore"); setTimeout(() => selectLoc(d.show, true), 50); return; }
+  if (d.ok) { const r = find(d.uid, d.ok); if (r && (await decide([[r.k, { s: "verified", v: r.updatedAt, at: nowIso(), by: S.me }]]))) toast("Verified"); return; }
+  if (d.vall) { const recs = (S.subs[d.vall] || []).filter((r) => reviewStatus(r) === "pending"); if (await decide(recs.map((r) => [r.k, { s: "verified", v: r.updatedAt, at: nowIso(), by: S.me }]))) toast(`Verified ${recs.length} records`); return; }
+  if (d.ret) {
+    const li = t.closest(".li"); if (li.querySelector(".retbox")) return;
+    const box = document.createElement("div"); box.className = "retbox"; box.style.cssText = "flex-basis:100%;display:flex;gap:8px;flex-wrap:wrap";
+    box.innerHTML = `<input class="search" style="flex:1;min-width:200px" placeholder="Reason, e.g. coordinates fall in the ocean" aria-label="Reason for returning"><button class="btn small danger">Return to contributor</button>`;
+    li.appendChild(box); box.querySelector("input").focus();
+    box.querySelector("button").onclick = async () => { const reason = box.querySelector("input").value.trim() || "Please check this record."; const r = find(d.uid, d.ret); if (r && (await decide([[r.k, { s: "rejected", v: r.updatedAt, at: nowIso(), by: S.me, reason }]]))) toast("Returned to contributor"); };
+  }
+});
+$("#setpc").addEventListener("click", async () => {
+  const a = $("#np1").value, b = $("#np2").value;
+  if (a.length < 8) { setMsg("#pcmsg", "bad", "Use at least 8 characters."); return; }
+  if (a !== b) { setMsg("#pcmsg", "bad", "The two passcodes do not match."); return; }
+  $("#setpc").disabled = true;
+  try {
+    const salt = hex(crypto.getRandomValues(new Uint8Array(16))), iter = 150000;
+    const hash = await pbkdf2(a.trim(), salt, iter);
+    const version = ((S.config && S.config.version) || 0) + 1;
+    await queued(() => S.db.doc("admin/config").set({ salt, hash, iter, version, updatedAt: nowIso(), by: S.me }));
+    const p = myProfile(); if (p) await queued(() => S.db.doc("contributors/" + S.me).update({ pv: version }));
+    $("#np1").value = $("#np2").value = ""; setMsg("#pcmsg", "ok", "Passcode updated. Share it with contributors.");
+  } catch (err) { setMsg("#pcmsg", "bad", esc(explainWriteError(err))); }
+  $("#setpc").disabled = false;
+});
+
+function fillDatalists() {
+  const nets = [...new Set(S.all.map((r) => r.net).filter(Boolean))].sort();
+  const insts = [...new Set(S.all.map((r) => r.inst).filter(Boolean))].sort();
+  $("#dl_net").innerHTML = nets.map((n) => `<option value="${esc(n)}">`).join("");
+  $("#dl_inst").innerHTML = insts.map((n) => `<option value="${esc(n)}">`).join("");
+}
+function renderWho() {
+  const w = $("#who");
+  if (!S.meObj || !S.me) { w.innerHTML = ""; return; }
+  const p = myProfile();
+  w.innerHTML = `<img alt="" src="${esc(S.meObj.avatarUrl)}"><span>${esc(p ? p.name : S.meObj.name || "Signed in")}</span>`;
+}
+function renderPeopleUI() { renderAccount(); renderMine(); renderReview(); renderWho(); }
+
+/* ---------- boot ---------- */
+const topoFC = (t, k) => topojson.feature(t, t.objects[k]);
+async function boot() {
+  // critical path: the records, country list and land outline
+  const [sites, meta, land] = await Promise.all([
+    fetch("sites.json").then((r) => r.json()),
+    fetch("meta.json").then((r) => r.json()),
+    fetch("basemap.topo.json").then((r) => r.json()).then((t) => topoFC(t, "land")).catch(() => null),
+  ]);
+  S.base = sites.map(prep); S.countries = meta.countries; S.log = meta.log; S.basemap = land;
+  if (land) { baseLayer = L.geoJSON(land, styleBase()).addTo(map); }
+  $("#nbase").textContent = S.base.length.toLocaleString();
+  if (meta.merge) { $("#nmerge").textContent = meta.merge.length; $("#mergelog").innerHTML = meta.merge.map((l) => `<li>${esc(l)}</li>`).join(""); }
+  $("#nfix").textContent = S.log.length; $("#fixlog").innerHTML = S.log.map((l) => `<li>${esc(l)}</li>`).join("");
+  $("#f_country").innerHTML = countryOptions("");
+  mergeCommunity();
+  const want = (location.hash || "").slice(1);
+  showTab(TABS.includes(want) ? want : "explore");
+  renderPeopleUI();
+  connect();
+  renderTerr(); renderSiteLegend(); renderTracks();
+  // map layers load in the background, each drawn as soon as it arrives
+  fetch("ecoregions.topo.json").then((r) => r.json()).then((t) => {
+    const eco = topoFC(t, "eco"); S.eco = prepEco(eco);
+    $("#nEco").textContent = $("#nEco2").textContent = eco.features.length;
+    renderBg(); mergeCommunity();
+  }).catch(() => { $("#bioOn").closest("label").hidden = true; $("#ecoDetail").closest("label").hidden = true; });
+  fetch("emissions.json").then((r) => r.json()).then((em) => { S.em = em; renderEm(); }).catch(() => { $("#emctl").hidden = true; });
+  fetch("footprints.json").then((r) => r.json()).then(buildFp).catch(() => { $("#fpctl").hidden = true; });
+}
+const themeMq = window.matchMedia("(prefers-color-scheme: dark)");
+const restyle = () => { renderEm(); if (baseLayer) baseLayer.setStyle(styleBase().style); if (borderLayer) borderLayer.setStyle({ color: getComputedStyle(document.documentElement).getPropertyValue("--border").trim() }); if (ecoLayer) ecoLayer.setStyle(ecoStyle); };
+themeMq.addEventListener?.("change", restyle);
+new MutationObserver(restyle).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+async function connect() {
+  if (!window.claude || typeof window.claude.use !== "function") return;
+  const [db, user, downloads] = await Promise.all([claude.use("db"), claude.use("user"), claude.use("downloads")]);
+  S.downloads = downloads; S.user = user;
+  if (user) {
+    const [me, isAdmin, can] = await Promise.all([user.me(), user.canEdit(), user.can("data.write")]);
+    S.meObj = me; S.me = me.id; S.isAdmin = isAdmin; S.canWrite = can;
+  }
+  if (!db) { renderPeopleUI(); return; }
+  S.db = db;
+  const onErr = (e) => console.warn("db", e && e.code);
+  db.collection("admin").onSnapshot((snap) => {
+    S.config = null; S.reviews = {};
+    for (const d of snap.docs) { if (d.id === "config") S.config = d.data(); if (d.id === "reviews") S.reviews = (d.data() || {}).decisions || {}; }
+    mergeCommunity(); renderPeopleUI();
+  }, onErr);
+  db.collection("contributors").onSnapshot((snap) => {
+    const c = {}; for (const d of snap.docs) { const v = d.data(); if (v && v.name) c[d.id] = { ...v, uid: d.id }; }
+    S.contributors = c; renderPeopleUI(); if (S.sel) renderDetail(S.sel);
+    if (!$("#formcard").hidden && !$("#f_cn").value && myProfile()) resetForm();
+  }, onErr);
+  db.collection("submissions").onSnapshot((snap) => {
+    const s = {}; for (const d of snap.docs) { const v = d.data(); if (v && Array.isArray(v.records)) s[d.id] = v.records; }
+    S.subs = s; mergeCommunity(); renderPeopleUI();
+  }, onErr);
+  renderPeopleUI();
+}
+boot().catch((e) => { console.error(e); $("#stats").innerHTML = `<div class="note bad">The site list could not be loaded. Reload the page.</div>`; });
+</script>
+
+</body></html>
